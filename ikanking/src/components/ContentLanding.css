@@ -1,0 +1,11 @@
+.titletext{
+        font-size: 72px; 
+        background: linear-gradient(90deg, rgba(255,184,70,1) 0%, rgba(5,12,156,1) 37%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+}
+
+.producttext{
+    font-size: 56px;
+    color: #050C9C;
+}

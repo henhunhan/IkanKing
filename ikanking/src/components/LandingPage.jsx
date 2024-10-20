@@ -1,9 +1,14 @@
 import React from "react";
 import HeaderLanding from "./HeaderLanding";
+import ContentLanding from "./ContentLanding";
 
 const LandingPage = () =>{
     return(
-        <HeaderLanding/>
+        <div>
+            <HeaderLanding/>
+            <ContentLanding/>
+        </div>
+
     )
 }
 
