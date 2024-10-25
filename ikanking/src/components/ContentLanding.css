@@ -9,3 +9,30 @@
     font-size: 56px;
     color: #050C9C;
 }
+
+.ikan-text{
+    font-size: 32px;
+    color: white;
+    margin-bottom: 48px;
+}
+
+.card{
+    background-color: #050C9C;
+}
+
+.button-buy{
+    background-color: #050C9C;
+    color: white;
+    display: inline-block;
+    font-size: 32px;
+    padding: 10px 60px;
+    border: 2px solid white;
+    border-radius: 50px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.button-buy:hover{
+    background-color: white;
+    color: #050C9C;
+}
+

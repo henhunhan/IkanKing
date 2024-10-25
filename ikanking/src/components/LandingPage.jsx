@@ -1,4 +1,3 @@
-import React from "react";
 import HeaderLanding from "./HeaderLanding";
 import ContentLanding from "./ContentLanding";
 
