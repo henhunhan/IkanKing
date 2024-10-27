@@ -3,11 +3,27 @@
         background: linear-gradient(90deg, rgba(255,184,70,1) 0%, rgba(5,12,156,1) 37%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        opacity: 0;
+        transform: translateY(25px);
+        animation: slide 1s ease-out forwards;
+        position: relative;
 }
 
 .producttext{
+    position: relative;
     font-size: 56px;
     color: #050C9C;
+    opacity: 0;
+    transform: translateY(25px);
+    animation: slide 1s ease-out forwards;
+}
+
+.fish-sell{
+    opacity: 0;
+    transform: translateY(25px);
+    animation: slide 1s ease-out forwards;
+    animation-delay: 1s;
+    position: relative;
 }
 
 .ikan-text{
@@ -34,5 +50,12 @@
 .button-buy:hover{
     background-color: white;
     color: #050C9C;
+}
+
+@keyframes slide {
+    to{
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 

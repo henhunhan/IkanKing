@@ -5,13 +5,12 @@ import picikanhias from './assets/ikan-hias.jpg';
 const ContentLanding = () =>{
     return(
         <div className="flex flex-col">
-
-            <div className="flex flex-col justify-center items-center mt-20">
+            <div className="flex flex-col justify-center items-center mt-10">
                 <h1 className="titletext">Rajanya Pasar Ikan</h1>
                 <h1 className="producttext">Jenis Produk</h1>
             </div>
 
-            <div className="flex flex-row">
+            <div className="flex flex-row fish-sell">
                 <div className="w-2/5 h-auto card mx-20">
                     <img src={picikankonsum} alt='gambarikankonsum' className="w-full h-72 object-cover" />
                     <div className="flex flex-col items-center mt-6 mb-14">
