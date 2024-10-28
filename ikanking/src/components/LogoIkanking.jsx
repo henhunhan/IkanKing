@@ -1,5 +1,5 @@
 import icon from "./assets/Icon.png"
-import './HeaderLanding.css'
+import './LogoIkanking.css'
 
 const HeaderLanding = () =>{
     return(

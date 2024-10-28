@@ -2,6 +2,7 @@ import './ContentLanding.css';
 import picikankonsum from './assets/ikan-konsum.jpg';
 import picikanhias from './assets/ikan-hias.jpg';
 
+
 const ContentLanding = () =>{
     return(
         <div className="flex flex-col">

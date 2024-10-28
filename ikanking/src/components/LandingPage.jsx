@@ -1,4 +1,4 @@
-import HeaderLanding from "./HeaderLanding";
+import HeaderLanding from "./LogoIkanking";
 import ContentLanding from "./ContentLanding";
 
 const LandingPage = () =>{
