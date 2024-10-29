@@ -37,7 +37,8 @@ const LoginPage = () => {
             <div className="flex items-center justify-center">
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full"
+                className="bg-dark-blue text-white hover:bg-white hover:text-dark-blue border-solid border-2 border-dark-blue font-bold py-4 px-4 rounded-full focus:outline-none focus:shadow-outline w-full
+                transition duration-300 ease-in-out transform"
               >
                 Sign in
               </button>
