@@ -1,18 +1,14 @@
-.titletext{
-        font-size: 72px; 
+.titletext{ 
         background: linear-gradient(90deg, rgba(255,184,70,1) 0%, rgba(5,12,156,1) 37%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         opacity: 0;
         transform: translateY(25px);
         animation: slide 1s ease-out forwards;
-        position: relative;
 }
 
 .producttext{
-    position: relative;
     font-size: 56px;
-    color: #050C9C;
     opacity: 0;
     transform: translateY(25px);
     animation: slide 1s ease-out forwards;
@@ -29,15 +25,10 @@
 .ikan-text{
     font-size: 32px;
     color: white;
-    margin-bottom: 48px;
 }
 
-.card{
-    background-color: #050C9C;
-}
 
 .button-buy{
-    background-color: #050C9C;
     color: white;
     display: inline-block;
     font-size: 32px;
