@@ -1,6 +1,6 @@
 import LogoIkanking from './LogoIkanking'
 
-const LoginPage = () => {
+const SignUp = () => {
   return (
     <div>
 
@@ -46,17 +46,10 @@ const LoginPage = () => {
           </form>
         </div>
 
-        <div>
-        <p className="text-center text-gray-500 text-md mt-6">
-            New to Ikanking? <a href="/signup" className="text-dark-blue hover:underline">Sign up</a>
-          </p>
-        </div>
-
-
       </div>
 
     </div>
   )
 }
 
-export default LoginPage
+export default SignUp
