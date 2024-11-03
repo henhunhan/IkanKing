@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import LogoIkanking from './LogoIkanking'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 
 function SignUp(){
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,14 +16,18 @@ function SignUp(){
         email,
         password,
       });
+      
+      navigate('/login')
       setMessage(response.data.message);
+
     } catch (error) {
       setMessage('Error: ' + error.response.data.message);
+      navigate('/signup')
     }
   };
 
   return (
-    <div>
+    <div className='h-screen'>
       <div>
         <LogoIkanking />
       </div>

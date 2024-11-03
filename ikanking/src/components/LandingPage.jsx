@@ -5,10 +5,10 @@ import picikanhias from './assets/ikan-hias.jpg';
 import { Link } from 'react-router-dom';
 
 
-const ContentLanding = () =>{
+function ContentLanding(){
+    
     return(
-
-        <div>
+        <div className='h-screen'>
             <div >
                 <LogoIkanking/>
             </div>
@@ -30,7 +30,7 @@ const ContentLanding = () =>{
                     <img src={picikankonsum} alt='gambarikankonsum' className="w-full h-72 object-cover" />
                     <div className="flex flex-col items-center mt-6 mb-14">
                         <h2 className="mb-12 ikan-text">Ikan Konsumsi</h2>
-                        <Link to="/login" className='button-buy'> BELI </Link> 
+                        <Link to="/ikankonsumsi" className='button-buy'> BELI </Link> 
                     </div>
                 </div>
 
@@ -38,7 +38,7 @@ const ContentLanding = () =>{
                     <img src={picikanhias} alt='gambarikanhias' className="w-full h-72 object-cover" />
                     <div className="flex flex-col items-center mt-6 mb-12">
                         <h2 className="mb-12 ikan-text">Ikan Hias</h2>
-                        <Link to="/login" className='button-buy'> BELI </Link>
+                        <Link to="/ikanhias" className='button-buy'> BELI </Link>
                     </div>
                 </div>
             </div>
