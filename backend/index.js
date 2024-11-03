@@ -37,7 +37,7 @@ app.post('/login', async (req, res) => {
 
   try {
     // Cek apakah email ada di database
-    const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const userResult = await pool.query(`SELECT * FROM users WHERE email = '${req.body.email}'`);
     const user = userResult.rows[0];
 
     if (!user) {
@@ -52,6 +52,7 @@ app.post('/login', async (req, res) => {
     // Jika cocok, kirimkan respons sukses
     res.status(200).json({ message: 'Sign in successful' });
   } catch (error) {
+    console.error('Database error:', error);
     res.status(500).json({ error: 'Database error' });
   }
 });
