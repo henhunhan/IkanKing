@@ -23,8 +23,7 @@ app.post('/signup', async (req, res) => {
 
   try {
     await pool.query(
-      'INSERT INTO users (email, password) VALUES ($1, $2)',
-      [email, password]
+      `INSERT INTO users (email, password) VALUES ('${req.body.email}', '${req.body.password}')`
     );
     res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
