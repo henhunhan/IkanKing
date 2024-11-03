@@ -9,9 +9,15 @@ const ContentLanding = () =>{
     return(
 
         <div>
-            <div>
+            <div >
                 <LogoIkanking/>
             </div>
+
+            <div className='flex justify-end mt-10 mr-24 gap-5'>
+                    <Link to="/login" className='button-login'>Log In</Link>
+                    <Link to="/signup" className='button-signup'>Sign Up</Link>
+            </div>
+
 
         <div className="flex flex-col">
             <div className="flex flex-col justify-center items-center mt-10">
