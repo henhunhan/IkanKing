@@ -16,8 +16,9 @@ function PageIkanKonsumsi() {
             <div className='flex justify-end mt-10 mr-24 gap-5'>
                 {isLoggedIn ? (
                     <div className="flex items-center gap-5">
-                        <button onClick={handleLogout} className="text-gray-500 hover:text-dark-blue">Logout</button>
                         <img src={portrait} alt="User Icon" className="w-6 h-6" />
+                        <button onClick={handleLogout} className="button-logout">Logout</button>
+                        
                     </div>
                 ) : (
                     <>

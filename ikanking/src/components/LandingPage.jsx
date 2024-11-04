@@ -1,5 +1,5 @@
 // ContentLanding.jsx
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from './auth';
 import LogoIkanking from "./LogoIkanking";
@@ -19,8 +19,8 @@ function ContentLanding() {
       <div className='flex justify-end mt-10 mr-24 gap-5'>
         {isLoggedIn ? (
           <div className="flex items-center gap-5">
-            <button onClick={handleLogout} className="text-gray-500 hover:text-dark-blue">Logout</button>
             <img src={portrait} alt="User Icon" className="w-6 h-6" />
+            <button onClick={handleLogout} className="button-logout">Logout</button>
           </div>
         ) : (
           <>

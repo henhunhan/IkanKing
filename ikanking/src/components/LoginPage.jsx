@@ -1,5 +1,5 @@
 // LoginPage.jsx
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import LogoIkanking from './LogoIkanking';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,7 @@ function LoginPage() {
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
     
-    const { isLoggedIn, setIsLoggedIn, handleLogout } = useContext(AuthContext);
+    const { setIsLoggedIn} = useContext(AuthContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,7 +21,7 @@ function LoginPage() {
             if (response.status === 200) {
                 localStorage.setItem('token', response.data.token); // Simpan token ke localStorage
                 setIsLoggedIn(true); // Update status login
-                navigate('/'); // Redirect ke halaman utama
+                navigate(-1);
                 alert(response.data.message);
             }
         } catch (error) {
