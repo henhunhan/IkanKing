@@ -1,14 +1,17 @@
 // LoginPage.jsx
+import React, { useState, useContext } from 'react';
 import LogoIkanking from './LogoIkanking';
-import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from './auth';
 
 function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const navigate = useNavigate();
+    
+    const { isLoggedIn, setIsLoggedIn, handleLogout } = useContext(AuthContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,7 +19,9 @@ function LoginPage() {
             const response = await axios.post('http://localhost:5000/login', { email, password });
 
             if (response.status === 200) {
-                navigate('/'); 
+                localStorage.setItem('token', response.data.token); // Simpan token ke localStorage
+                setIsLoggedIn(true); // Update status login
+                navigate('/'); // Redirect ke halaman utama
                 alert(response.data.message);
             }
         } catch (error) {
@@ -25,6 +30,25 @@ function LoginPage() {
         }
     };
 
+    // if (isLoggedIn) {
+    //     // Jika user sudah login, tampilkan pesan dan tombol logout
+    //     return (
+    //         <div className='flex flex-col items-center justify-center h-screen'>
+    //             <LogoIkanking />
+    //             <button
+    //                 onClick={() => {
+    //                     handleLogout();
+    //                     navigate('/login'); // Redirect ke halaman login setelah logout
+    //                 }}
+    //                 className="bg-dark-blue text-white hover:bg-white hover:text-dark-blue border-solid border-2 border-dark-blue font-bold py-4 px-4 rounded-full"
+    //             >
+    //                 Logout
+    //             </button>
+    //         </div>
+    //     );
+    // }
+
+    // Form login jika user belum login
     return (
         <div className=''>
             <div>

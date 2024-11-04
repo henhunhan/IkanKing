@@ -1,20 +1,31 @@
 import LogoIkanking from "./LogoIkanking";
+import { useContext } from 'react';
 import './IkanJual.css'
 import { Link } from "react-router-dom";
+import { AuthContext } from "./auth";
+import portrait from './assets/portrait.png';
 
-const PageIkanKonsumsi = () => {
+function PageIkanKonsumsi() {
+    const { isLoggedIn, handleLogout } = useContext(AuthContext);
     return (
         <div>
             <div>
                 <LogoIkanking />
             </div>
 
-
             <div className='flex justify-end mt-10 mr-24 gap-5'>
-                    <Link to="/login" className='button-login'>Log In</Link>
-                    <Link to="/signup" className='button-signup'>Sign Up</Link>
+                {isLoggedIn ? (
+                    <div className="flex items-center gap-5">
+                        <button onClick={handleLogout} className="text-gray-500 hover:text-dark-blue">Logout</button>
+                        <img src={portrait} alt="User Icon" className="w-6 h-6" />
+                    </div>
+                ) : (
+                    <>
+                        <Link to="/login"  className='button-login'>Log In</Link>
+                        <Link to="/signup" className='button-signup'>Sign Up</Link>
+                    </>
+                )}
             </div>
-            
 
             <div className=" flex justify-center w-1/5 mt-20 ml-20 text-2xl sidebar">
                 <div className="flex flex-col w-72">
