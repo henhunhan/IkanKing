@@ -16,7 +16,7 @@ function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/login', { email, password });
+            const response = await axios.post('http://localhost:5000/api/users/login', { email, password });
 
             if (response.status === 200) {
                 localStorage.setItem('token', response.data.token); // Simpan token ke localStorage

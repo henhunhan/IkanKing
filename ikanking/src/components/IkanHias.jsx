@@ -1,47 +1,92 @@
 import LogoIkanking from "./LogoIkanking";
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import './IkanJual.css'
 import { Link } from "react-router-dom";
 import { AuthContext } from "./auth";
 import portrait from './assets/portrait.png';
+import search from './assets/loupe.png'
 
 function PageIkanHias() {
     const { isLoggedIn, handleLogout } = useContext(AuthContext);
+    const [ikan, setIkan] = useState([]);
+
+    useEffect(() => {
+        const fetchIkan = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/ikanhias');
+                const data = await response.json();
+                setIkan(data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        fetchIkan();
+    }, []);
+
     return (
-        <div>
-            <div>
+        <div className="h-screen">
+            <div >
                 <LogoIkanking />
             </div>
+            <div className="flex justify-between mt-8 ml-72">
+                <div className="flex justify-center w-8/12 ml-24">
+                    <form className="border border-gray-300 rounded-md px-4 py-1 mt-1 w-full flex items-center">
+                        <input
+                            type="text"
+                            placeholder="Search....."
+                            className="w-full outline-none"
+                        />
+                        <button className="search" type="submit"><img src={search} /></button>
+                    </form>
+                </div>
+                <div className='flex justify-end items-center mr-8 gap-8'>
+                    {isLoggedIn ? (
+                        <div className="flex items-center gap-5">
+                            <img src={portrait} alt="User Icon" className="w-6 h-6" />
+                            <button onClick={handleLogout} className="button-logout">Logout</button>
 
+                        </div>
+                    ) : (
+                        <>
+                            <Link to="/login" className='button-login'>Log In</Link>
+                            <Link to="/signup" className='button-signup'>Sign Up</Link>
+                        </>
+                    )}
+                </div>
 
-            <div className='flex justify-end mt-10 mr-24 gap-5'>
-                {isLoggedIn ? (
-                    <div className="flex items-center gap-5">
-                        <img src={portrait} alt="User Icon" className="w-6 h-6" />
-                        <button onClick={handleLogout} className="button-logout">Logout</button>
-                    </div>
-                ) : (
-                    <>
-                        <Link to="/login" className='button-login'>Log In</Link>
-                        <Link to="/signup" className='button-signup'>Sign Up</Link>
-                    </>
-                )}
             </div>
 
+            <div className="flex flex-row">
 
-            <div className=" flex justify-center w-1/5 mt-20 ml-20 text-2xl sidebar">
-                <div className="flex flex-col w-72">
-                    <h2 className="bg-dark-blue text-white font-bold py-3">CATEGORY</h2>
-                    <ul className="flex flex-col space-y-10 text-center">
-                        <Link>Ikan Air Laut</Link>
-                        <Link>Ikan Air Tawar</Link>
-                        <Link>Ikan Air Payau</Link>
-                    </ul>
+                <div className="w-1/5 h-full mt-10 ml-20 text-2xl sidebar">
+                    <div className="">
+                        <h2 className="bg-dark-blue text-white font-bold py-3 px-2">CATEGORY</h2>
+                        <ul className="flex flex-col space-y-5 text-center py-2">
 
+                            <div className="py-5">
+                                <Link className="menu">Ikan Air Laut</Link>
+                            </div>
+                            
+                            <div className="py-5">
+                                <Link className="menu">Ikan Air Tawar</Link>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+                {/* Main Content */}
+                <div className="p-6">
+                    {/* Product Cards */}
+                    <div className="grid grid-cols-4 gap-4 mt-4">{ikan.map(ikanhias => (
+                        <div key={ikanhias.id} className=" product-card">
+                            <img src={ikanhias.gambar_url} alt={ikanhias.nama} className="w-full h-32 object-cover mb-2" />
+                            <h3 className="text-lg font-bold">{ikanhias.nama}</h3>
+                            <p className="text-red-500 font-semibold">Rp. {ikanhias.harga.toLocaleString('id-ID')}/Ekor</p>
+                            <p className="text-gray-500">{ikanhias.kota}</p>
+                        </div>
+                    ))}
+                    </div>
                 </div>
             </div>
-
-
         </div>
     )
 }

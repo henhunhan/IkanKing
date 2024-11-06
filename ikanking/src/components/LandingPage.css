@@ -63,7 +63,7 @@
     color: white;
     display: inline-block;
     font-size: 18px;
-    padding: 2px 15px;
+    padding: 1px 15px;
     background-color: #050C9C;
     border: 2px solid #050C9C;
     border-radius: 5px;
@@ -80,7 +80,7 @@
     color: white;
     display: inline-block;
     font-size: 18px;
-    padding: 2px 15px;
+    padding: 1px 15px;
     background-color: red;
     border: 2px solid red;
     border-radius: 5px;

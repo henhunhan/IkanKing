@@ -17,3 +17,29 @@
     background-color: white;
     
 }
+
+.search{
+    width: 2em;
+    height: 2em;
+}
+
+.product-card{
+    padding: 1rem;
+    border: solid;
+    border-color: black;
+    border-radius: 0.5rem;
+    transition: transform 0.5s ease-in-out;
+}
+
+.product-card:hover{
+    transform: scale(1.05);
+}
+
+.menu{
+    color: black;
+    transition: transform 0.5s ease-in-out;
+}
+.menu:hover{
+    color: #050C9C;
+    text-decoration: underline;
+}
