@@ -19,8 +19,8 @@
 }
 
 .search{
-    width: 2em;
-    height: 2em;
+    width: 2rem;
+    height: 2rem;
 }
 
 .product-card{
@@ -34,6 +34,9 @@
 .product-card:hover{
     transform: scale(1.05);
 }
+
+
+
 
 .menu{
     color: black;

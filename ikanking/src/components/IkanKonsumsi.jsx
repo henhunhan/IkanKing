@@ -1,31 +1,63 @@
 import LogoIkanking from "./LogoIkanking";
 import { useContext, useEffect, useState } from 'react';
-import './IkanJual.css'
+import './IkanJual.css';
 import { Link } from "react-router-dom";
 import { AuthContext } from "./auth";
 import portrait from './assets/portrait.png';
-import search from './assets/loupe.png'
+import search from './assets/loupe.png';
 
 function PageIkanKonsumsi() {
     const { isLoggedIn, handleLogout } = useContext(AuthContext);
     const [ikans, setIkans] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const fetchIkansByCategory = async (category) => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/ikankonsumsi/${category}`);
+            const data = await response.json();
+            setIkans(data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    // Ambil data ikan ketika `selectedCategory` berubah
+    useEffect(() => {
+        if (selectedCategory) {
+            fetchIkansByCategory(selectedCategory);
+        } else {
+            fetchIkans();
+        }
+    }, [selectedCategory]);
+
+    const fetchIkans = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/ikankonsumsi');
+            const data = await response.json();
+            setIkans(data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
 
     useEffect(() => {
-        const fetchIkans = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/api/ikankonsumsi');
-                const data = await response.json();
-                setIkans(data);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
         fetchIkans();
     }, []);
 
+    // Fungsi untuk mengupdate searchTerm ketika user mengetik
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    // Filter ikan berdasarkan searchTerm
+    const filteredIkans = ikans.filter((ikankonsumsi) =>
+        ikankonsumsi.nama.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="h-screen">
-            <div >
+            <div>
                 <LogoIkanking />
             </div>
             <div className="flex justify-between mt-8 ml-72">
@@ -35,6 +67,8 @@ function PageIkanKonsumsi() {
                             type="text"
                             placeholder="Search....."
                             className="w-full outline-none"
+                            value={searchTerm}
+                            onChange={handleSearchChange} // Panggil fungsi saat input berubah
                         />
                         <button className="search" type="submit"><img src={search} /></button>
                     </form>
@@ -44,7 +78,6 @@ function PageIkanKonsumsi() {
                         <div className="flex items-center gap-5">
                             <img src={portrait} alt="User Icon" className="w-6 h-6" />
                             <button onClick={handleLogout} className="button-logout">Logout</button>
-
                         </div>
                     ) : (
                         <>
@@ -53,48 +86,46 @@ function PageIkanKonsumsi() {
                         </>
                     )}
                 </div>
-
             </div>
 
             <div className="flex flex-row">
-
                 <div className="w-1/5 h-full mt-10 ml-20 text-2xl sidebar">
-                    <div className="">
+                    <div>
                         <h2 className="bg-dark-blue text-white font-bold py-3 px-2">CATEGORY</h2>
                         <ul className="flex flex-col space-y-5 text-center py-2">
-
                             <div className="py-5">
-                                <Link className="menu">Ikan Air Laut</Link>
+                                <button onClick={() => setSelectedCategory('laut')} className="menu">Ikan Air Laut</button>
                             </div>
-                            
                             <div className="py-5">
-                                <Link className="menu">Ikan Air Tawar</Link>
+                                <button onClick={() => setSelectedCategory('tawar')} className="menu">Ikan Air Tawar</button>
                             </div>
-                            
                             <div className="py-5">
-                                <Link className="menu">Ikan Air Payau</Link>
+                                <button onClick={() => setSelectedCategory('payau')} className="menu">Ikan Air Payau</button>
                             </div>
-
-
+                            <div className="py-5">
+                                <button onClick={() => setSelectedCategory('')} className="menu">All</button>
+                            </div>
                         </ul>
                     </div>
                 </div>
+
                 {/* Main Content */}
                 <div className="p-6">
                     {/* Product Cards */}
-                    <div className="grid grid-cols-4 gap-4 mt-4">{ikans.map(ikankonsumsi => (
-                        <div key={ikankonsumsi.id} className=" product-card">
-                            <img src={ikankonsumsi.gambar_url} alt={ikankonsumsi.nama} className="w-full h-32 object-cover mb-2" />
-                            <h3 className="text-lg font-bold">{ikankonsumsi.nama}</h3>
-                            <p className="text-red-500 font-semibold">Rp. {ikankonsumsi.harga.toLocaleString('id-ID')}/Kg</p>
-                            <p className="text-gray-500">{ikankonsumsi.kota}</p>
-                        </div>
-                    ))}
+                    <div className="grid grid-cols-4 gap-4 mt-4">
+                        {filteredIkans.map(ikankonsumsi => (
+                            <div key={ikankonsumsi.id} className="product-card">
+                                <img src={ikankonsumsi.gambar_url} alt={ikankonsumsi.nama} className="w-full h-32 object-cover mb-2" />
+                                <h3 className="text-lg font-bold">{ikankonsumsi.nama}</h3>
+                                <p className="text-red-500 font-semibold">Rp. {ikankonsumsi.harga.toLocaleString('id-ID')}/Kg</p>
+                                <p className="text-gray-500">{ikankonsumsi.kota}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default PageIkanKonsumsi
+export default PageIkanKonsumsi;

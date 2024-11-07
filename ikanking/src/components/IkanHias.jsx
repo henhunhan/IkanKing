@@ -9,8 +9,27 @@ import search from './assets/loupe.png'
 function PageIkanHias() {
     const { isLoggedIn, handleLogout } = useContext(AuthContext);
     const [ikan, setIkan] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const fetchIkansByCategory = async (category) => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/ikanhias/${category}`);
+            const data = await response.json();
+            setIkan(data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
 
     useEffect(() => {
+        if (selectedCategory) {
+            fetchIkansByCategory(selectedCategory);
+        } else {
+            fetchIkan();
+        }
+    }, [selectedCategory]);
+
         const fetchIkan = async () => {
             try {
                 const response = await fetch('http://localhost:5000/api/ikanhias');
@@ -20,8 +39,19 @@ function PageIkanHias() {
                 console.error("Error fetching data:", error);
             }
         };
-        fetchIkan();
-    }, []);
+
+            useEffect(() => {
+                fetchIkan();
+            }, []);
+
+
+            const handleSearchChange = (event) => {
+                setSearchTerm(event.target.value);
+            };
+
+            const filteredIkan = ikan.filter((ikankonsumsi) =>
+                ikankonsumsi.nama.toLowerCase().includes(searchTerm.toLowerCase())
+            );
 
     return (
         <div className="h-screen">
@@ -35,6 +65,8 @@ function PageIkanHias() {
                             type="text"
                             placeholder="Search....."
                             className="w-full outline-none"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
                         />
                         <button className="search" type="submit"><img src={search} /></button>
                     </form>
@@ -64,21 +96,25 @@ function PageIkanHias() {
                         <ul className="flex flex-col space-y-5 text-center py-2">
 
                             <div className="py-5">
-                                <Link className="menu">Ikan Air Laut</Link>
+                                <Link onClick={() => setSelectedCategory('laut')} className="menu">Ikan Air Laut</Link>
                             </div>
                             
                             <div className="py-5">
-                                <Link className="menu">Ikan Air Tawar</Link>
+                                <Link onClick={() => setSelectedCategory('tawar')} className="menu">Ikan Air Tawar</Link>
                             </div>
+                            <div className="py-5">
+                                <button onClick={() => setSelectedCategory('')} className="menu">All</button>
+                            </div>
+
                         </ul>
                     </div>
                 </div>
                 {/* Main Content */}
                 <div className="p-6">
                     {/* Product Cards */}
-                    <div className="grid grid-cols-4 gap-4 mt-4">{ikan.map(ikanhias => (
+                    <div className="grid grid-cols-4 gap-4 mt-4">{filteredIkan.map(ikanhias => (
                         <div key={ikanhias.id} className=" product-card">
-                            <img src={ikanhias.gambar_url} alt={ikanhias.nama} className="w-full h-32 object-cover mb-2" />
+                            <img src={ikanhias.gambar_url} alt={ikanhias.nama} className="w-60 h-32 object-cover mb-2" />
                             <h3 className="text-lg font-bold">{ikanhias.nama}</h3>
                             <p className="text-red-500 font-semibold">Rp. {ikanhias.harga.toLocaleString('id-ID')}/Ekor</p>
                             <p className="text-gray-500">{ikanhias.kota}</p>
