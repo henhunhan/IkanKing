@@ -17,7 +17,7 @@ function SignUp(){
         password,
       });
       
-      navigate('/login')
+      navigate('/')
       setMessage(response.data.message);
 
     } catch (error) {

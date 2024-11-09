@@ -8,7 +8,7 @@ import { AuthContext } from './auth';
 function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
+    const [message] = useState('');
     const navigate = useNavigate();
     
     const { setIsLoggedIn} = useContext(AuthContext);
@@ -25,29 +25,9 @@ function LoginPage() {
                 alert(response.data.message);
             }
         } catch (error) {
-            setMessage(error.response?.data?.error || 'Error: Could not sign in');
-            navigate('/signup');
+            alert(error.response?.data?.error || 'Error: Could not sign in');
         }
     };
-
-    // if (isLoggedIn) {
-    //     // Jika user sudah login, tampilkan pesan dan tombol logout
-    //     return (
-    //         <div className='flex flex-col items-center justify-center h-screen'>
-    //             <LogoIkanking />
-    //             <button
-    //                 onClick={() => {
-    //                     handleLogout();
-    //                     navigate('/login'); // Redirect ke halaman login setelah logout
-    //                 }}
-    //                 className="bg-dark-blue text-white hover:bg-white hover:text-dark-blue border-solid border-2 border-dark-blue font-bold py-4 px-4 rounded-full"
-    //             >
-    //                 Logout
-    //             </button>
-    //         </div>
-    //     );
-    // }
-
     // Form login jika user belum login
     return (
         <div className=''>
