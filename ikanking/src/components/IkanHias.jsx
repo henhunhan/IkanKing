@@ -14,7 +14,7 @@ function PageIkanHias() {
 
     const fetchIkansByCategory = async (category) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/ikanhias/${category}`);
+            const response = await fetch(`http://localhost:5000/api/ikanhias/category/${category}`);
             const data = await response.json();
             setIkan(data);
         } catch (error) {
@@ -116,7 +116,7 @@ function PageIkanHias() {
                         <div key={ikanhias.id} className=" product-card">
                             <img src={ikanhias.gambar_url} alt={ikanhias.nama} className="w-60 h-32 object-cover mb-2" />
                             <h3 className="text-lg font-bold">{ikanhias.nama}</h3>
-                            <p className="text-red-500 font-semibold">Rp. {ikanhias.harga.toLocaleString('id-ID')}/Ekor</p>
+                            <p className="text-red-500 font-semibold">    Rp. {ikanhias.harga ? parseFloat(ikanhias.harga).toLocaleString('id-ID') : "Harga tidak tersedia"}/Ekor</p>
                             <p className="text-gray-500">{ikanhias.kota}</p>
                         </div>
                     ))}

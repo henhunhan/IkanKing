@@ -4,6 +4,7 @@ import ContentLanding from './components/LandingPage'
 import LoginPage from './components/LoginPage'
 import PageIkanKonsumsi from './components/IkanKonsumsi'
 import PageIkanHias from './components/ikanhias'
+import DetailIkanKonsumsi from './components/IkanKonsumsiDetail'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import SignUp from './components/SignUp'
 import { AuthProvider } from './components/auth'
@@ -18,6 +19,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/ikankonsumsi" element={<PageIkanKonsumsi />} />
+          <Route path="/ikankonsumsi/product/:id" element={<DetailIkanKonsumsi />} />
           <Route path="/ikanhias" element={<PageIkanHias />} />
         </Routes>
       </Router>

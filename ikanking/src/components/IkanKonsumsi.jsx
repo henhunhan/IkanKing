@@ -1,3 +1,4 @@
+// src/PageIkanKonsumsi.jsx
 import LogoIkanking from "./LogoIkanking";
 import { useContext, useEffect, useState } from 'react';
 import './IkanJual.css';
@@ -5,6 +6,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "./auth";
 import portrait from './assets/portrait.png';
 import search from './assets/loupe.png';
+
 
 function PageIkanKonsumsi() {
     const { isLoggedIn, handleLogout } = useContext(AuthContext);
@@ -14,7 +16,7 @@ function PageIkanKonsumsi() {
 
     const fetchIkansByCategory = async (category) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/ikankonsumsi/${category}`);
+            const response = await fetch(`http://localhost:5000/api/ikankonsumsi/category/${category}`);
             const data = await response.json();
             setIkans(data);
         } catch (error) {
@@ -22,7 +24,6 @@ function PageIkanKonsumsi() {
         }
     };
 
-    // Ambil data ikan ketika `selectedCategory` berubah
     useEffect(() => {
         if (selectedCategory) {
             fetchIkansByCategory(selectedCategory);
@@ -45,12 +46,10 @@ function PageIkanKonsumsi() {
         fetchIkans();
     }, []);
 
-    // Fungsi untuk mengupdate searchTerm ketika user mengetik
     const handleSearchChange = (event) => {
         setSearchTerm(event.target.value);
     };
 
-    // Filter ikan berdasarkan searchTerm
     const filteredIkans = ikans.filter((ikankonsumsi) =>
         ikankonsumsi.nama.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -68,9 +67,9 @@ function PageIkanKonsumsi() {
                             placeholder="Search....."
                             className="w-full outline-none"
                             value={searchTerm}
-                            onChange={handleSearchChange} // Panggil fungsi saat input berubah
+                            onChange={handleSearchChange}
                         />
-                        <button className="search" type="submit"><img src={search} /></button>
+                        <button className="search" type="submit"><img src={search} alt="Search" /></button>
                     </form>
                 </div>
                 <div className='flex justify-end items-center mr-8 gap-8'>
@@ -109,17 +108,15 @@ function PageIkanKonsumsi() {
                     </div>
                 </div>
 
-                {/* Main Content */}
                 <div className="p-6">
-                    {/* Product Cards */}
                     <div className="grid grid-cols-4 gap-4 mt-4">
                         {filteredIkans.map(ikankonsumsi => (
-                            <div key={ikankonsumsi.id} className="product-card">
-                                <img src={ikankonsumsi.gambar_url} alt={ikankonsumsi.nama} className="w-full h-32 object-cover mb-2" />
+                            <Link to={`/ikankonsumsi/product/${ikankonsumsi.id}`} key={ikankonsumsi.id} className="product-card">
+                                <img src={ikankonsumsi.gambar_url} alt={ikankonsumsi.nama} className="w-60 h-32 object-cover mb-2" />
                                 <h3 className="text-lg font-bold">{ikankonsumsi.nama}</h3>
-                                <p className="text-red-500 font-semibold">Rp. {ikankonsumsi.harga.toLocaleString('id-ID')}/Kg</p>
+                                <p className="text-red-500 font-semibold">Rp. {ikankonsumsi.harga ? parseFloat(ikankonsumsi.harga).toLocaleString('id-ID') : "Harga tidak tersedia"}/Kg</p>
                                 <p className="text-gray-500">{ikankonsumsi.kota}</p>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>
