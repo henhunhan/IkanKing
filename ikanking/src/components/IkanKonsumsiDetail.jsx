@@ -1,11 +1,15 @@
 // src/ProductDetail.jsx
 import LogoIkanking from './LogoIkanking';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import LocationDropdown from './location';
 import cart from './assets/add-shopping-cart.png';
+import { AuthContext } from './auth';
+import { Link } from 'react-router-dom';
+import portrait from './assets/portrait.png';
 
 function DetailIkanKonsumsi() {
+    const { isLoggedIn, handleLogout } = useContext(AuthContext);
     const { id } = useParams();
     const [ikankonsumsi, setProduct] = useState('');
     const [quantity, setQuantity] = useState(1); // State untuk menyimpan kuantitas
@@ -38,12 +42,25 @@ function DetailIkanKonsumsi() {
     }
 
     return (
-        <div className='h-screen'>
+        <div className='h-screen mt-9'>
             <div>
                 <LogoIkanking />
+                <div className='flex justify-end items-center mr-8 gap-8'>
+                    {isLoggedIn ? (
+                        <div className="flex items-center gap-5">
+                            <img src={portrait} alt="User Icon" className="w-6 h-6" />
+                            <button onClick={handleLogout} className="button-logout">Logout</button>
+                        </div>
+                    ) : (
+                        <>
+                            <Link to="/login" className='button-login'>Log In</Link>
+                            <Link to="/signup" className='button-signup'>Sign Up</Link>
+                        </>
+                    )}
+                </div>
             </div>
 
-            <div className="flex justify-center p-8 h-2/3 mt-28">
+            <div className="flex justify-center p-8 h-2/3 mt-10">
                 <div className="flex">
                     {/* Gambar Produk */}
                     <div className="flex justify-center w-2/3 p-3">
