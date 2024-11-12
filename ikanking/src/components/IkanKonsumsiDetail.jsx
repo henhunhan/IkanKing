@@ -1,16 +1,15 @@
-// src/ProductDetail.jsx
-import LogoIkanking from './LogoIkanking';
 import { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import LogoIkanking from './LogoIkanking';
 import LocationDropdown from './location';
 import cart from './assets/add-shopping-cart.png';
-import { AuthContext } from './auth';
-import { Link } from 'react-router-dom';
 import portrait from './assets/portrait.png';
+import { AuthContext } from './auth';
 
 function DetailIkanKonsumsi() {
-    const { isLoggedIn, handleLogout } = useContext(AuthContext);
     const { id } = useParams();
+    const navigate = useNavigate();
+    const { isLoggedIn, handleLogout } = useContext(AuthContext); // Mendapatkan status login dan fungsi logout dari AuthContext
     const [ikankonsumsi, setProduct] = useState('');
     const [quantity, setQuantity] = useState(1); // State untuk menyimpan kuantitas
 
@@ -35,6 +34,27 @@ function DetailIkanKonsumsi() {
     // Fungsi untuk mengurangi kuantitas
     const decreaseQuantity = () => {
         setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
+    };
+
+    // Fungsi untuk menangani "Masukkan Keranjang"
+    const handleAddToCart = () => {
+        if (!isLoggedIn) {
+            navigate('/login'); // Mengarahkan ke halaman login jika belum login
+            return;
+        }
+        // Lanjutkan logika menambahkan ke keranjang jika user sudah login
+        console.log('Produk ditambahkan ke keranjang:', id, 'dengan kuantitas:', quantity);
+        // Anda bisa menambahkan logika fetch ke API untuk menyimpan data keranjang di server
+    };
+
+    // Fungsi untuk menangani "Beli Sekarang"
+    const handleBuyNow = () => {
+        if (!isLoggedIn) {
+            navigate('/login'); // Mengarahkan ke halaman login jika belum login
+            return;
+        }
+        // Lanjutkan logika untuk membeli produk jika user sudah login
+        navigate('/checkout'); // Misalnya mengarahkan ke halaman checkout
     };
 
     if (!ikankonsumsi) {
@@ -96,11 +116,11 @@ function DetailIkanKonsumsi() {
 
                         {/* Tombol Aksi */}
                         <div className="flex space-x-6 mt-8">
-                            <button className="flex items-center justify-center space-x-2 bg-light-blue py-2 px-4 rounded-md">
+                            <button onClick={handleAddToCart} className="flex items-center justify-center space-x-2 bg-light-blue py-2 px-4 rounded-md">
                                 <img src={cart} alt="cart" className='w-5 h-5'/>
                                 <span>Masukkan Keranjang</span>
                             </button>
-                            <button className="bg-blue text-white rounded-md font-bold py-2 px-4">Beli Sekarang</button>
+                            <button onClick={handleBuyNow} className="bg-blue text-white rounded-md font-bold py-2 px-4">Beli Sekarang</button>
                         </div>
 
                     </div>
