@@ -38,7 +38,7 @@ function DetailIkanKonsumsi() {
     };
 
     if (!ikankonsumsi) {
-        return <div>Loading...</div>;
+        return <div className='flex h-screen justify-center items-center text-3xl'>Loading...</div>;
     }
 
     return (
