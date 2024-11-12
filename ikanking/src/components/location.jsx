@@ -65,6 +65,7 @@ const LocationDropdown = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
+      <p className='text-2xl'>Pengiriman:</p>
       <button
         className="w-full text-left py-2 px-4 bg-white border border-gray-300 rounded"
         onClick={toggleDropdown}
