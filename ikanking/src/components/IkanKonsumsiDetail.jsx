@@ -68,7 +68,7 @@ function DetailIkanKonsumsi() {
                     </div>
 
                     {/* Informasi Produk */}
-                    <div className="w-1/2 pt-2 pb-7 pr-2 flex flex-col justify-between">
+                    <div className="w-1/2 pt-2 pb-7 pr-2 pl-4 flex flex-col justify-between">
                         {/* Nama dan Harga Produk */}
                         <div>
                             <h1 className="text-4xl font-bold text-gray-800">{ikankonsumsi.nama}</h1>
