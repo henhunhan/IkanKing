@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const pool = require('../db'); // Pastikan kita menggunakan koneksi database
 
 // Controller untuk sign-up
-const signup = async (req, res) => {
+exports.signup = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -19,7 +19,7 @@ const signup = async (req, res) => {
 };
 
 // Controller untuk login
-const login = async (req, res) => {
+exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -42,4 +42,24 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { signup, login };
+exports.AddtoKeranjang = async (req, res) => {
+  const { user_id, product_id, quantity, harga_total } = req.body;
+
+  try {
+      // Insert item into cart, update if it already exists
+      await pool.query(
+          `INSERT INTO cart (user_id, product_id, quantity, harga_total)
+           VALUES ($1, $2, $3, $4)
+           ON CONFLICT (user_id, product_id)
+           DO UPDATE SET quantity = cart.quantity + EXCLUDED.quantity,
+                         harga_total = cart.harga_total + EXCLUDED.harga_total`,
+          [user_id, product_id, quantity, harga_total]
+      );
+      res.status(200).json({ message: 'Product added to cart' });
+  } catch (error) {
+      console.error('Error adding to cart:', error);
+      res.status(500).json({ message: 'Error adding to cart' });
+  }
+};
+
+
