@@ -9,9 +9,9 @@ import { AuthContext } from './auth';
 function DetailIkanKonsumsi() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { isLoggedIn, handleLogout } = useContext(AuthContext); // Mendapatkan status login dan fungsi logout dari AuthContext
+    const { isLoggedIn, userId, handleLogout } = useContext(AuthContext); // Tambahkan userId dari AuthContext
     const [ikankonsumsi, setProduct] = useState('');
-    const [quantity, setQuantity] = useState(1); // State untuk menyimpan kuantitas
+    const [quantity, setQuantity] = useState(1);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -26,35 +26,52 @@ function DetailIkanKonsumsi() {
         fetchProduct();
     }, [id]);
 
-    // Fungsi untuk menambah kuantitas
     const increaseQuantity = () => {
         setQuantity((prevQuantity) => prevQuantity + 1);
     };
 
-    // Fungsi untuk mengurangi kuantitas
     const decreaseQuantity = () => {
         setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
     };
 
     // Fungsi untuk menangani "Masukkan Keranjang"
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
         if (!isLoggedIn) {
-            navigate('/login'); // Mengarahkan ke halaman login jika belum login
+            navigate('/login'); // Redirect ke login jika belum login
             return;
         }
-        // Lanjutkan logika menambahkan ke keranjang jika user sudah login
-        console.log('Produk ditambahkan ke keranjang:', id, 'dengan kuantitas:', quantity);
-        // Anda bisa menambahkan logika fetch ke API untuk menyimpan data keranjang di server
+
+        try {
+            const response = await fetch(`http://localhost:5000/api/users/product/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_id: id,
+                    quantity: quantity,
+                    harga_total: quantity * ikankonsumsi.harga
+                })
+            });
+
+            if (response.ok) {
+                alert('Produk berhasil ditambahkan ke keranjang');
+                // Berikan notifikasi atau update UI jika berhasil
+            } else {
+                alert('Gagal menambahkan produk ke keranjang');
+                // Tangani error, tampilkan pesan atau notifikasi ke user
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
-    // Fungsi untuk menangani "Beli Sekarang"
     const handleBuyNow = () => {
         if (!isLoggedIn) {
-            navigate('/login'); // Mengarahkan ke halaman login jika belum login
+            navigate('/login'); // Redirect ke login jika belum login
             return;
         }
-        // Lanjutkan logika untuk membeli produk jika user sudah login
-        navigate('/checkout'); // Misalnya mengarahkan ke halaman checkout
+        navigate('/checkout');
     };
 
     if (!ikankonsumsi) {
@@ -82,20 +99,18 @@ function DetailIkanKonsumsi() {
 
             <div className="flex justify-center p-8 h-2/3 mt-10">
                 <div className="flex">
-                    {/* Gambar Produk */}
                     <div className="flex justify-center w-2/3 p-3">
                         <img src={ikankonsumsi.gambar_url} alt={ikankonsumsi.nama} className="w-full h-full object-contain" />
                     </div>
 
-                    {/* Informasi Produk */}
                     <div className="w-1/2 pt-2 pb-7 pr-2 pl-4 flex flex-col justify-between">
-                        {/* Nama dan Harga Produk */}
                         <div>
                             <h1 className="text-4xl font-bold text-gray-800">{ikankonsumsi.nama}</h1>
-                            <p className="text-3xl text-dark-blue font-bold mt-6 bg-light-gray px-5 py-4">Rp. {ikankonsumsi.harga ? parseFloat(ikankonsumsi.harga).toLocaleString('id-ID') : "Harga tidak tersedia"}</p>
+                            <p className="text-3xl text-dark-blue font-bold mt-6 bg-light-gray px-5 py-4">
+                                Rp. {ikankonsumsi.harga ? parseFloat(ikankonsumsi.harga).toLocaleString('id-ID') : "Harga tidak tersedia"}
+                            </p>
                         </div>
 
-                        {/* Informasi Pengiriman dan Kuantitas */}
                         <div className="space-y-4"> 
                             <LocationDropdown />
                             <div className="flex items-center space-x-4">
@@ -103,7 +118,6 @@ function DetailIkanKonsumsi() {
                                 <span className="text-gray-800">Rp. 13.000</span>
                             </div>
 
-                            {/* Kontrol Kuantitas */}
                             <div className="flex items-center mt-4">
                                 <p className="text-gray-600">Kuantitas:</p>
                                 <div className="flex items-center ml-4">
@@ -114,7 +128,6 @@ function DetailIkanKonsumsi() {
                             </div>
                         </div>
 
-                        {/* Tombol Aksi */}
                         <div className="flex space-x-6 mt-8">
                             <button onClick={handleAddToCart} className="flex items-center justify-center space-x-2 bg-light-blue py-2 px-4 rounded-md">
                                 <img src={cart} alt="cart" className='w-5 h-5'/>
@@ -122,7 +135,6 @@ function DetailIkanKonsumsi() {
                             </button>
                             <button onClick={handleBuyNow} className="bg-blue text-white rounded-md font-bold py-2 px-4">Beli Sekarang</button>
                         </div>
-
                     </div>
                 </div>
             </div>
