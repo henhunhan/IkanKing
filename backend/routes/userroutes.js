@@ -9,6 +9,6 @@ router.post('/signup', signup);
 // Rute untuk login
 router.post('/login', login);
 
-router.post('/product/add', AddtoKeranjang);
+router.post('/product/add', authtoken, AddtoKeranjang);
 
 module.exports = router;

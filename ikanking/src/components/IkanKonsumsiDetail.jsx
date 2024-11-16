@@ -9,7 +9,7 @@ import { AuthContext } from './auth';
 function DetailIkanKonsumsi() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { isLoggedIn, userId, handleLogout } = useContext(AuthContext); // Tambahkan userId dari AuthContext
+    const { isLoggedIn, handleLogout } = useContext(AuthContext); // Tambahkan userId dari AuthContext
     const [ikankonsumsi, setProduct] = useState('');
     const [quantity, setQuantity] = useState(1);
 
@@ -36,35 +36,37 @@ function DetailIkanKonsumsi() {
 
     // Fungsi untuk menangani "Masukkan Keranjang"
     const handleAddToCart = async () => {
-        if (!isLoggedIn) {
-            navigate('/login'); // Redirect ke login jika belum login
+        const token = localStorage.getItem('token'); // Ambil token dari localStorage
+        if (!token) {
+            navigate('/login'); // Redirect ke login jika token tidak ada
             return;
         }
-
+    
         try {
-            const response = await fetch(`http://localhost:5000/api/users/product/add`, {
+            const response = await fetch('http://localhost:5000/api/users/product/add', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` // Sertakan token
                 },
                 body: JSON.stringify({
                     product_id: id,
-                    quantity: quantity,
-                    harga_total: quantity * ikankonsumsi.harga
+                    quantity,
+                    harga_total: quantity * ikankonsumsi.harga // Hitung harga total
                 })
             });
-
+    
+            const data = await response.json();
             if (response.ok) {
-                alert('Produk berhasil ditambahkan ke keranjang');
-                // Berikan notifikasi atau update UI jika berhasil
+                console.log('Produk berhasil dimasukkan ke keranjang:', data);
             } else {
-                alert('Gagal menambahkan produk ke keranjang');
-                // Tangani error, tampilkan pesan atau notifikasi ke user
+                console.error('Gagal menambahkan ke keranjang:', data.message);
             }
         } catch (error) {
             console.error('Error:', error);
         }
     };
+    
 
     const handleBuyNow = () => {
         if (!isLoggedIn) {
