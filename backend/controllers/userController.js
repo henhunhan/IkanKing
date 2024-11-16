@@ -37,7 +37,7 @@ exports.login = async (req, res) => {
     }
 
     // Buat token dengan user_id di dalam payload
-    const token = jwt.sign({ user_id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ user_id: user.id }, process.env.JWT_SECRET, { expiresIn: '' });
 
     res.status(200).json({ message: 'Sign in successful', token });
   } catch (error) {
@@ -52,28 +52,30 @@ exports.AddtoKeranjang = async (req, res) => {
   try {
       const user_id = req.user.user_id;
 
-      // Ambil nama produk berdasarkan product_id
+      // Ambil nama produk dan image_url berdasarkan product_id
       const productResult = await pool.query(
-          `SELECT nama FROM allproduct WHERE product_id = $1`,
+          `SELECT nama, gambar_url FROM allproduct WHERE product_id = $1`,
           [product_id]
       );
 
       const nama_produk = productResult.rows[0]?.nama;
+      const image_url = productResult.rows[0]?.gambar_url;
 
-      if (!nama_produk) {
-          return res.status(404).json({ error: 'Product not found' });
+      if (!nama_produk || !image_url) {
+          return res.status(404).json({ error: 'Product not found or image URL missing' });
       }
 
       // Simpan data ke tabel cart
       await pool.query(
-          `INSERT INTO cart (user_id, product_id, quantity, harga_total, nama_produk)
-          VALUES ($1, $2, $3, $4, $5)
+          `INSERT INTO cart (user_id, product_id, quantity, harga_total, nama_produk, image_url)
+          VALUES ($1, $2, $3, $4, $5, $6)
           ON CONFLICT (user_id, product_id)
           DO UPDATE SET 
               quantity = cart.quantity + $3, 
               harga_total = cart.harga_total + $4,
-              nama_produk = $5`,
-          [user_id, product_id, quantity, harga_total, nama_produk]
+              nama_produk = $5,
+              image_url = $6`,
+          [user_id, product_id, quantity, harga_total, nama_produk, image_url]
       );
 
       res.status(200).json({ message: 'Product added to cart' });
@@ -82,6 +84,33 @@ exports.AddtoKeranjang = async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+
+// Mendapatkan keranjang berdasarkan user_id
+exports.CartList = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const query = `
+      SELECT 
+        nama_produk,
+        harga_satuan,
+        quantity,
+        harga_total,
+        image_url
+      FROM cart
+      WHERE user_id = $1
+    `;
+
+    const { rows } = await pool.query(query, [userId]);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching cart:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
 
 
 

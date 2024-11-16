@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "./auth";
 import portrait from './assets/portrait.png';
 import search from './assets/loupe.png';
+import cart from './assets/shopping-cart.png'
 
 
 function PageIkanKonsumsi() {

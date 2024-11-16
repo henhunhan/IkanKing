@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { signup, login, AddtoKeranjang } = require('../controllers/userController');
+const { signup, login, AddtoKeranjang, CartList} = require('../controllers/userController');
 const authtoken= require('../userauthtoken');
 
 // Rute untuk sign-up
@@ -10,5 +10,7 @@ router.post('/signup', signup);
 router.post('/login', login);
 
 router.post('/product/add', authtoken, AddtoKeranjang);
+
+router.get('/cart/', CartList);
 
 module.exports = router;

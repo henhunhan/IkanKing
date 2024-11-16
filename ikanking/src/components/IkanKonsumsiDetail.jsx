@@ -36,9 +36,9 @@ function DetailIkanKonsumsi() {
 
     // Fungsi untuk menangani "Masukkan Keranjang"
     const handleAddToCart = async () => {
-        const token = localStorage.getItem('token'); // Ambil token dari localStorage
+        const token = localStorage.getItem('token');
         if (!token) {
-            navigate('/login'); // Redirect ke login jika token tidak ada
+            navigate('/login');
             return;
         }
     
@@ -47,25 +47,29 @@ function DetailIkanKonsumsi() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Sertakan token
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     product_id: id,
                     quantity,
-                    harga_total: quantity * ikankonsumsi.harga // Hitung harga total
+                    harga_total: quantity * ikankonsumsi.harga
                 })
             });
     
             const data = await response.json();
             if (response.ok) {
+                alert('Produk berhasil dimasukkan ke keranjang');
                 console.log('Produk berhasil dimasukkan ke keranjang:', data);
+                // Tambahkan logika jika ingin menampilkan notifikasi atau pembaruan
             } else {
+                alert('Gagal menambahkan ke keranjang');
                 console.error('Gagal menambahkan ke keranjang:', data.message);
             }
         } catch (error) {
             console.error('Error:', error);
         }
     };
+    
     
 
     const handleBuyNow = () => {
