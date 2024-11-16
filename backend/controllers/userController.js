@@ -37,7 +37,7 @@ exports.login = async (req, res) => {
     }
 
     // Buat token dengan user_id di dalam payload
-    const token = jwt.sign({ user_id: user.id }, process.env.JWT_SECRET, { expiresIn: '' });
+    const token = jwt.sign({ user_id: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     res.status(200).json({ message: 'Sign in successful', token });
   } catch (error) {
@@ -89,12 +89,12 @@ exports.AddtoKeranjang = async (req, res) => {
 // Mendapatkan keranjang berdasarkan user_id
 exports.CartList = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const user_id = req.user.user_id; // Ambil user_id dari token autentikasi
 
     const query = `
       SELECT 
+        product_id,
         nama_produk,
-        harga_satuan,
         quantity,
         harga_total,
         image_url
@@ -102,13 +102,20 @@ exports.CartList = async (req, res) => {
       WHERE user_id = $1
     `;
 
-    const { rows } = await pool.query(query, [userId]);
+    const { rows } = await pool.query(query, [user_id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Keranjang kosong" });
+    }
+
     res.json(rows);
   } catch (error) {
     console.error('Error fetching cart:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+
 
 
 

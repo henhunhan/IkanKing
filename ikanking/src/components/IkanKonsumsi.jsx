@@ -1,12 +1,11 @@
 // src/PageIkanKonsumsi.jsx
 import LogoIkanking from "./LogoIkanking";
 import { useContext, useEffect, useState } from 'react';
-import './IkanJual.css';
 import { Link } from "react-router-dom";
 import { AuthContext } from "./auth";
 import portrait from './assets/portrait.png';
 import search from './assets/loupe.png';
-import cart from './assets/shopping-cart.png'
+import usercart from './assets/shopping-cart.png'
 
 
 function PageIkanKonsumsi() {
@@ -70,14 +69,18 @@ function PageIkanKonsumsi() {
                             value={searchTerm}
                             onChange={handleSearchChange}
                         />
-                        <button className="search" type="submit"><img src={search} alt="Search" /></button>
+                        <button className="w-8 h-8" type="submit"><img src={search} alt="Search" /></button>
                     </form>
                 </div>
                 <div className='flex justify-end items-center mr-8 gap-8'>
                     {isLoggedIn ? (
                         <div className="flex items-center gap-5">
+                            <Link to="/cart" className="w-8 h-8">
+                            <img src={usercart}/>  
+                            </Link>
                             <img src={portrait} alt="User Icon" className="w-6 h-6" />
-                            <button onClick={handleLogout} className="button-logout">Logout</button>
+                            <button onClick={handleLogout} className="bg-red text-white inline-block text-lg py-1 px-4 border-solid border-2 border-red rounded-md hover:bg-white hover:text-red transform transition duration-300"
+                            >Logout</button>
                         </div>
                     ) : (
                         <>
@@ -89,21 +92,21 @@ function PageIkanKonsumsi() {
             </div>
 
             <div className="flex flex-row">
-                <div className="w-1/5 h-full mt-10 ml-20 text-2xl sidebar">
+                <div className="w-1/5 h-full mt-10 ml-20 text-2xl border-solid border-2 border-dark-blue">
                     <div>
                         <h2 className="bg-dark-blue text-white font-bold py-3 px-2">CATEGORY</h2>
                         <ul className="flex flex-col space-y-5 text-center py-2">
                             <div className="py-5">
-                                <button onClick={() => setSelectedCategory('laut')} className="menu">Ikan Air Laut</button>
+                                <button onClick={() => setSelectedCategory('laut')} className="text-black hover:text-dark-blue hover:underline underline-offset-4">Ikan Air Laut</button>
                             </div>
                             <div className="py-5">
-                                <button onClick={() => setSelectedCategory('tawar')} className="menu">Ikan Air Tawar</button>
+                                <button onClick={() => setSelectedCategory('tawar')} className="text-black hover:text-dark-blue hover:underline underline-offset-4">Ikan Air Tawar</button>
                             </div>
                             <div className="py-5">
-                                <button onClick={() => setSelectedCategory('payau')} className="menu">Ikan Air Payau</button>
+                                <button onClick={() => setSelectedCategory('payau')} className="text-black hover:text-dark-blue hover:underline underline-offset-4">Ikan Air Payau</button>
                             </div>
                             <div className="py-5">
-                                <button onClick={() => setSelectedCategory('')} className="menu">All</button>
+                                <button onClick={() => setSelectedCategory('')} className="text-black hover:text-dark-blue hover:underline underline-offset-4">All</button>
                             </div>
                         </ul>
                     </div>
@@ -112,7 +115,7 @@ function PageIkanKonsumsi() {
                 <div className="p-6">
                     <div className="grid grid-cols-4 gap-4 mt-4">
                         {filteredIkans.map(ikankonsumsi => (
-                            <Link to={`/ikankonsumsi/product/${ikankonsumsi.id}`} key={ikankonsumsi.id} className="product-card">
+                            <Link to={`/ikankonsumsi/product/${ikankonsumsi.id}`} key={ikankonsumsi.id} className="hover:scale-105 transform transition duration-300 border-solid border-2 border-black rounded-lg p-4">
                                 <img src={ikankonsumsi.gambar_url} alt={ikankonsumsi.nama} className="w-60 h-32 object-cover mb-2" />
                                 <h3 className="text-lg font-bold">{ikankonsumsi.nama}</h3>
                                 <p className="text-red-500 font-semibold">Rp. {ikankonsumsi.harga ? parseFloat(ikankonsumsi.harga).toLocaleString('id-ID') : "Harga tidak tersedia"}/Kg</p>

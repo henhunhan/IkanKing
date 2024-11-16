@@ -11,6 +11,6 @@ router.post('/login', login);
 
 router.post('/product/add', authtoken, AddtoKeranjang);
 
-router.get('/cart/', CartList);
+router.get('/cart', authtoken, CartList);
 
 module.exports = router;

@@ -5,6 +5,7 @@ import LocationDropdown from './location';
 import cart from './assets/add-shopping-cart.png';
 import portrait from './assets/portrait.png';
 import { AuthContext } from './auth';
+import usercart from './assets/shopping-cart.png'
 
 function DetailIkanKonsumsi() {
     const { id } = useParams();
@@ -41,7 +42,7 @@ function DetailIkanKonsumsi() {
             navigate('/login');
             return;
         }
-    
+
         try {
             const response = await fetch('http://localhost:5000/api/users/product/add', {
                 method: 'POST',
@@ -55,12 +56,11 @@ function DetailIkanKonsumsi() {
                     harga_total: quantity * ikankonsumsi.harga
                 })
             });
-    
+
             const data = await response.json();
             if (response.ok) {
                 alert('Produk berhasil dimasukkan ke keranjang');
                 console.log('Produk berhasil dimasukkan ke keranjang:', data);
-                // Tambahkan logika jika ingin menampilkan notifikasi atau pembaruan
             } else {
                 alert('Gagal menambahkan ke keranjang');
                 console.error('Gagal menambahkan ke keranjang:', data.message);
@@ -69,9 +69,6 @@ function DetailIkanKonsumsi() {
             console.error('Error:', error);
         }
     };
-    
-    
-
     const handleBuyNow = () => {
         if (!isLoggedIn) {
             navigate('/login'); // Redirect ke login jika belum login
@@ -91,11 +88,15 @@ function DetailIkanKonsumsi() {
                 <div className='flex justify-end items-center mr-8 gap-8'>
                     {isLoggedIn ? (
                         <div className="flex items-center gap-5">
+                            <Link to="/cart" className="user-cart">
+                            <img src={usercart} />  
+                            </Link>
                             <img src={portrait} alt="User Icon" className="w-6 h-6" />
                             <button onClick={handleLogout} className="button-logout">Logout</button>
                         </div>
                     ) : (
                         <>
+
                             <Link to="/login" className='button-login'>Log In</Link>
                             <Link to="/signup" className='button-signup'>Sign Up</Link>
                         </>
@@ -117,7 +118,7 @@ function DetailIkanKonsumsi() {
                             </p>
                         </div>
 
-                        <div className="space-y-4"> 
+                        <div className="space-y-4">
                             <LocationDropdown />
                             <div className="flex items-center space-x-4">
                                 <p className="text-gray-600">Ongkos Kirim:</p>
@@ -135,11 +136,11 @@ function DetailIkanKonsumsi() {
                         </div>
 
                         <div className="flex space-x-6 mt-8">
-                            <button onClick={handleAddToCart} className="flex items-center justify-center space-x-2 bg-light-blue py-2 px-4 rounded-md">
-                                <img src={cart} alt="cart" className='w-5 h-5'/>
+                            <button onClick={handleAddToCart} className="flex items-center justify-center space-x-2 bg-light-blue py-2 px-4 rounded-md hover:scale-105 transform transition duration-300">
+                                <img src={cart} alt="cart" className='w-5 h-5' />
                                 <span>Masukkan Keranjang</span>
                             </button>
-                            <button onClick={handleBuyNow} className="bg-blue text-white rounded-md font-bold py-2 px-4">Beli Sekarang</button>
+                            <button onClick={handleBuyNow} className="bg-blue text-white rounded-md font-bold py-2 px-4 hover:scale-105 transform transition duration-300">Beli Sekarang</button>
                         </div>
                     </div>
                 </div>

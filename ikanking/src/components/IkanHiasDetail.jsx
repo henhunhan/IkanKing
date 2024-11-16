@@ -1,18 +1,18 @@
-// src/ProductDetail.jsx
-import LogoIkanking from './LogoIkanking';
 import { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import LogoIkanking from './LogoIkanking';
 import LocationDropdown from './location';
 import cart from './assets/add-shopping-cart.png';
-import { AuthContext } from './auth';
-import { Link } from 'react-router-dom';
 import portrait from './assets/portrait.png';
+import { AuthContext } from './auth';
+import usercart from './assets/shopping-cart.png'
 
 function DetailIkanHias() {
-    const { isLoggedIn, handleLogout } = useContext(AuthContext);
     const { id } = useParams();
+    const navigate = useNavigate();
+    const { isLoggedIn, handleLogout } = useContext(AuthContext);
     const [ikanhias, setProduct] = useState('');
-    const [quantity, setQuantity] = useState(1); // State untuk menyimpan kuantitas
+    const [quantity, setQuantity] = useState(1);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -27,18 +27,58 @@ function DetailIkanHias() {
         fetchProduct();
     }, [id]);
 
-    // Fungsi untuk menambah kuantitas
     const increaseQuantity = () => {
         setQuantity((prevQuantity) => prevQuantity + 1);
     };
 
-    // Fungsi untuk mengurangi kuantitas
     const decreaseQuantity = () => {
         setQuantity((prevQuantity) => (prevQuantity > 1 ? prevQuantity - 1 : 1));
     };
 
+    const handleAddToCart = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:5000/api/users/product/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    product_id: id,
+                    quantity,
+                    harga_total: quantity * ikanhias.harga
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert('Produk berhasil dimasukkan ke keranjang');
+                console.log('Produk berhasil dimasukkan ke keranjang:', data);
+            } else {
+                alert('Gagal menambahkan ke keranjang');
+                console.error('Gagal menambahkan ke keranjang:', data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handleBuyNow = () => {
+        if (!isLoggedIn) {
+            navigate('/login');
+            return;
+        }
+        navigate('/checkout');
+    };
+
     if (!ikanhias) {
-        return <div>Loading...</div>;
+        return <div className='flex h-screen justify-center items-center text-3xl'>Loading...</div>;
     }
 
     return (
@@ -48,6 +88,9 @@ function DetailIkanHias() {
                 <div className='flex justify-end items-center mr-8 gap-8'>
                     {isLoggedIn ? (
                         <div className="flex items-center gap-5">
+                            <Link to="/cart" className="user-cart">
+                            <img src={usercart} />  
+                            </Link>
                             <img src={portrait} alt="User Icon" className="w-6 h-6" />
                             <button onClick={handleLogout} className="button-logout">Logout</button>
                         </div>
@@ -62,28 +105,25 @@ function DetailIkanHias() {
 
             <div className="flex justify-center p-8 h-2/3 mt-10">
                 <div className="flex">
-                    {/* Gambar Produk */}
                     <div className="flex justify-center w-2/3 p-3">
                         <img src={ikanhias.gambar_url} alt={ikanhias.nama} className="w-full h-full object-contain" />
                     </div>
 
-                    {/* Informasi Produk */}
-                    <div className="w-1/2 pt-2 pb-7 pr-2 flex flex-col justify-between">
-                        {/* Nama dan Harga Produk */}
+                    <div className="w-1/2 pt-2 pb-7 pr-2 pl-4 flex flex-col justify-between">
                         <div>
                             <h1 className="text-4xl font-bold text-gray-800">{ikanhias.nama}</h1>
-                            <p className="text-3xl text-dark-blue font-bold mt-6 bg-light-gray px-5 py-4">Rp. {ikanhias.harga ? parseFloat(ikanhias.harga).toLocaleString('id-ID') : "Harga tidak tersedia"}</p>
+                            <p className="text-3xl text-dark-blue font-bold mt-6 bg-light-gray px-5 py-4">
+                                Rp. {ikanhias.harga ? parseFloat(ikanhias.harga).toLocaleString('id-ID') : "Harga tidak tersedia"}
+                            </p>
                         </div>
 
-                        {/* Informasi Pengiriman dan Kuantitas */}
-                        <div className="space-y-4"> 
+                        <div className="space-y-4">
                             <LocationDropdown />
                             <div className="flex items-center space-x-4">
                                 <p className="text-gray-600">Ongkos Kirim:</p>
                                 <span className="text-gray-800">Rp. 13.000</span>
                             </div>
 
-                            {/* Kontrol Kuantitas */}
                             <div className="flex items-center mt-4">
                                 <p className="text-gray-600">Kuantitas:</p>
                                 <div className="flex items-center ml-4">
@@ -94,15 +134,13 @@ function DetailIkanHias() {
                             </div>
                         </div>
 
-                        {/* Tombol Aksi */}
                         <div className="flex space-x-6 mt-8">
-                            <button className="flex items-center justify-center space-x-2 bg-light-blue py-2 px-4 rounded-md">
-                                <img src={cart} alt="cart" className='w-5 h-5'/>
+                            <button onClick={handleAddToCart} className="flex items-center justify-center space-x-2 bg-light-blue py-2 px-4 rounded-md hover:scale-105 transform transition duration-300">
+                                <img src={cart} alt="cart" className='w-5 h-5' />
                                 <span>Masukkan Keranjang</span>
                             </button>
-                            <button className="bg-blue text-white rounded-md font-bold py-2 px-4">Beli Sekarang</button>
+                            <button onClick={handleBuyNow} className="bg-blue text-white rounded-md font-bold py-2 px-4 hover:scale-105 transform transition duration-300">Beli Sekarang</button>
                         </div>
-
                     </div>
                 </div>
             </div>

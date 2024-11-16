@@ -1,10 +1,10 @@
 import LogoIkanking from "./LogoIkanking";
 import { useContext, useEffect, useState } from 'react';
-import './IkanJual.css'
 import { Link } from "react-router-dom";
 import { AuthContext } from "./auth";
 import portrait from './assets/portrait.png';
 import search from './assets/loupe.png'
+import usercart from './assets/shopping-cart.png'
 
 function PageIkanHias() {
     const { isLoggedIn, handleLogout } = useContext(AuthContext);
@@ -68,14 +68,17 @@ function PageIkanHias() {
                             value={searchTerm}
                             onChange={handleSearchChange}
                         />
-                        <button className="search" type="submit"><img src={search} /></button>
+                        <button className="w-8 h-8" type="submit"><img src={search} /></button>
                     </form>
                 </div>
                 <div className='flex justify-end items-center mr-8 gap-8'>
                     {isLoggedIn ? (
                         <div className="flex items-center gap-5">
+                            <Link to="/cart" className="w-8 h-8">
+                            <img src={usercart} />  
+                            </Link>
                             <img src={portrait} alt="User Icon" className="w-6 h-6" />
-                            <button onClick={handleLogout} className="button-logout">Logout</button>
+                            <button onClick={handleLogout} className="bg-red text-white inline-block text-lg py-1 px-4 border-solid border-2 border-red rounded-md hover:bg-white hover:text-red transform transition duration-300">Logout</button>
 
                         </div>
                     ) : (
@@ -90,20 +93,20 @@ function PageIkanHias() {
 
             <div className="flex flex-row">
 
-                <div className="w-1/5 h-full mt-10 ml-20 text-2xl sidebar">
+                <div className="w-1/5 h-full mt-10 ml-20 text-2xl border-solid border-2 border-dark-blue">
                     <div className="">
                         <h2 className="bg-dark-blue text-white font-bold py-3 px-2">CATEGORY</h2>
                         <ul className="flex flex-col space-y-5 text-center py-2">
 
                             <div className="py-5">
-                                <Link onClick={() => setSelectedCategory('laut')} className="menu">Ikan Air Laut</Link>
+                                <Link onClick={() => setSelectedCategory('laut')} className="text-black hover:text-dark-blue hover:underline underline-offset-4">Ikan Air Laut</Link>
                             </div>
                             
                             <div className="py-5">
-                                <Link onClick={() => setSelectedCategory('tawar')} className="menu">Ikan Air Tawar</Link>
+                                <Link onClick={() => setSelectedCategory('tawar')} className="text-black hover:text-dark-blue hover:underline underline-offset-4">Ikan Air Tawar</Link>
                             </div>
                             <div className="py-5">
-                                <button onClick={() => setSelectedCategory('')} className="menu">All</button>
+                                <button onClick={() => setSelectedCategory('')} className="text-black hover:text-dark-blue hover:underline underline-offset-4">All</button>
                             </div>
 
                         </ul>
@@ -113,7 +116,7 @@ function PageIkanHias() {
                 <div className="p-6">
                     {/* Product Cards */}
                     <div className="grid grid-cols-4 gap-4 mt-4">{filteredIkan.map(ikanhias => (
-                        <Link to={`/ikanhias/product/${ikanhias.id}`} key={ikanhias.id} className=" product-card">
+                        <Link to={`/ikanhias/product/${ikanhias.id}`} key={ikanhias.id} className="hover:scale-105 transform transition duration-300 border-solid border-2 border-black rounded-lg p-4">
                             <img src={ikanhias.gambar_url} alt={ikanhias.nama} className="w-60 h-32 object-cover mb-2" />
                             <h3 className="text-lg font-bold">{ikanhias.nama}</h3>
                             <p className="text-red-500 font-semibold">    Rp. {ikanhias.harga ? parseFloat(ikanhias.harga).toLocaleString('id-ID') : "Harga tidak tersedia"}/Ekor</p>
