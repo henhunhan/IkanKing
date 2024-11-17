@@ -52,9 +52,9 @@ function PageCart() {
 
         <div className="py-28 px-24">
             <h1 className="text-3xl font-bold mb-6">Keranjang Belanja</h1>
-            <div className="space-y-6">
+            <div className="space-y-10">
                 {cartItems.map((item) => (
-                    <div key={item.product_id} className="flex items-center gap-6 border p-4 rounded shadow">
+                    <div key={item.product_id} className="flex items-center gap-6 border p-4 rounded shadow bg-light-gray">
                         <img
                             src={item.image_url}
                             alt={item.nama_produk}
@@ -62,6 +62,7 @@ function PageCart() {
                         />
                         <div className="flex-grow">
                             <h2 className="text-xl font-semibold">{item.nama_produk}</h2>
+                            <p>Total: Rp. {item.harga_satuan ? parseFloat(item.harga_satuan).toLocaleString('id-ID'): "Harga tidak tersedia"}</p>
                             <p>Kuantitas: {item.quantity}</p>
                             <p>Total: Rp. {item.harga_total ? parseFloat(item.harga_total).toLocaleString('id-ID'): "Harga tidak tersedia"}</p>
                         </div>

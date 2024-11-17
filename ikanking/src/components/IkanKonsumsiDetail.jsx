@@ -69,13 +69,38 @@ function DetailIkanKonsumsi() {
             console.error('Error:', error);
         }
     };
-    const handleBuyNow = () => {
+    const handleBuyNow = async() => {
+        const token = localStorage.getItem('token');
         if (!isLoggedIn) {
             navigate('/login'); // Redirect ke login jika belum login
             return;
         }
         navigate('/checkout');
+        try {
+            const response = await fetch('http://localhost:5000/api/users/product/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    product_id: id,
+                    quantity,
+                    harga_total: quantity * ikankonsumsi.harga
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                console.log('Produk berhasil dimasukkan ke keranjang:', data);
+            } else {    
+                console.error('Gagal menambahkan ke keranjang:', data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
+
 
     if (!ikankonsumsi) {
         return <div className='flex h-screen justify-center items-center text-3xl'>Loading...</div>;
@@ -88,7 +113,7 @@ function DetailIkanKonsumsi() {
                 <div className='flex justify-end items-center mr-8 gap-8'>
                     {isLoggedIn ? (
                         <div className="flex items-center gap-5">
-                            <Link to="/cart" className="user-cart">
+                            <Link to="/cart" className="w-8 h-8">
                             <img src={usercart} />  
                             </Link>
                             <img src={portrait} alt="User Icon" className="w-6 h-6" />

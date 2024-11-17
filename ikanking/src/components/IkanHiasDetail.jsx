@@ -88,7 +88,7 @@ function DetailIkanHias() {
                 <div className='flex justify-end items-center mr-8 gap-8'>
                     {isLoggedIn ? (
                         <div className="flex items-center gap-5">
-                            <Link to="/cart" className="user-cart">
+                            <Link to="/cart" className="w-8 h-8">
                             <img src={usercart} />  
                             </Link>
                             <img src={portrait} alt="User Icon" className="w-6 h-6" />
