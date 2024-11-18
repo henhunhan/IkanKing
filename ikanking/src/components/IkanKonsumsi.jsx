@@ -78,7 +78,7 @@ function PageIkanKonsumsi() {
                             <Link to="/cart" className="w-8 h-8">
                             <img src={usercart}/>  
                             </Link>
-                            <img src={portrait} alt="User Icon" className="w-6 h-6" />
+                            <img src={portrait} alt="User Icon" className="w-8 h-8" />
                             <button onClick={handleLogout} className="bg-red text-white inline-block text-lg py-1 px-4 border-solid border-2 border-red rounded-md hover:bg-white hover:text-red transform transition duration-300"
                             >Logout</button>
                         </div>

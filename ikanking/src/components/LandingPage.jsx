@@ -19,7 +19,7 @@ function ContentLanding() {
       <div className='flex justify-end mt-10 mr-24 gap-5'>
         {isLoggedIn ? (
           <div className="flex items-center gap-5">
-            <img src={portrait} alt="User Icon" className="w-6 h-6" />
+            <img src={portrait} alt="User Icon" className="w-8 h-8" />
             <button onClick={handleLogout} className="button-logout">Logout</button>
           </div>
         ) : (

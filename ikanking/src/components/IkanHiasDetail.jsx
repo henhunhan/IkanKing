@@ -91,7 +91,7 @@ function DetailIkanHias() {
                             <Link to="/cart" className="w-8 h-8">
                             <img src={usercart} />  
                             </Link>
-                            <img src={portrait} alt="User Icon" className="w-6 h-6" />
+                            <img src={portrait} alt="User Icon" className="w-8 h-8" />
                             <button onClick={handleLogout} className="button-logout">Logout</button>
                         </div>
                     ) : (
