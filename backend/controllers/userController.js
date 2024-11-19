@@ -115,6 +115,50 @@ exports.CartList = async (req, res) => {
   }
 };
 
+exports.UpdateAlamatUser = async (req, res) => {
+  const { alamat } = req.body;
+  const userId = req.user.user_id;
+
+  try {
+    await pool.query('UPDATE users SET alamat = $1 WHERE id = $2', [alamat, userId]);
+    res.status(200).json({ message: 'Alamat berhasil diperbarui' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Terjadi kesalahan saat memperbarui alamat' });
+  }
+};
+
+exports.UpdateUsername = async (req, res) => {
+  const { username } = req.body;
+  const userId = req.user.user_id;
+
+  try {
+    await pool.query('UPDATE users SET username = $1 WHERE id = $2', [username, userId]);
+    res.status(200).json({ message: 'Username berhasil diperbarui' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Terjadi kesalahan saat memperbarui username' });
+  }
+};
+
+// Handler untuk mengambil profil pengguna
+exports.GetUserProfile = async (req, res) => {
+  const id = req.user.user_id; // ID pengguna dari middleware autentikasi
+
+  try {
+    const result = await pool.query('SELECT email, alamat, username FROM users WHERE id = $1', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Pengguna tidak ditemukan.' });
+    }
+
+    const user = result.rows[0];
+    res.status(200).json(user); // Kirim data profil pengguna
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Terjadi kesalahan saat mengambil data pengguna.' });
+  }
+};
+
 
 
 

@@ -81,6 +81,10 @@ function DetailIkanHias() {
         return <div className='flex h-screen justify-center items-center text-3xl'>Loading...</div>;
     }
 
+    const handleUserIconClick = () => {
+        navigate('/profile'); // Navigasi ke halaman UserInfo
+    };
+
     return (
         <div className='h-screen mt-9'>
             <div>
@@ -89,9 +93,14 @@ function DetailIkanHias() {
                     {isLoggedIn ? (
                         <div className="flex items-center gap-5">
                             <Link to="/cart" className="w-8 h-8">
-                            <img src={usercart} />  
+                                <img src={usercart} />
                             </Link>
-                            <img src={portrait} alt="User Icon" className="w-8 h-8" />
+                            <img
+                                src={portrait}
+                                alt="User Icon"
+                                className="w-8 h-8 cursor-pointer"
+                                onClick={handleUserIconClick} // Tambahkan event click
+                            />
                             <button onClick={handleLogout} className="button-logout">Logout</button>
                         </div>
                     ) : (

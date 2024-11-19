@@ -7,6 +7,8 @@ function ProductCheckout() {
     const [cartItems, setCartItems] = useState([]);
     const [totalHargaBarang, setTotalHargaBarang] = useState(0);
     const [totalPengiriman, setTotalPengiriman] = useState(0);
+    const [userAlamat, setUserAlamat] = useState(""); // Tambahkan state untuk alamat pengguna
+    const [userNama, setUserNama] = useState(""); // Tambahkan state untuk nama pengguna
     const navigate = useNavigate();
 
     const { isLoggedIn } = useContext(AuthContext);
@@ -47,7 +49,29 @@ function ProductCheckout() {
             }
         };
 
+        const fetchUserData = async () => {
+            const token = localStorage.getItem("token");
+            try {
+                const response = await fetch("http://localhost:5000/api/users/profile", {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch user data");
+                }
+
+                const data = await response.json();
+                setUserAlamat(data.alamat || "Alamat belum diisi"); // Simpan alamat
+                setUserNama(data.username || "Nama belum diisi"); // Simpan nama pengguna
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+            }
+        };
+
         fetchCartItems();
+        fetchUserData();
     }, [isLoggedIn, navigate]);
 
     const totalKeseluruhan = totalHargaBarang + totalPengiriman;
@@ -63,9 +87,8 @@ function ProductCheckout() {
                     <div className="border p-4 rounded-md shadow-md">
                         <h2 className="text-xl font-bold mb-4">Alamat Pengiriman</h2>
                         <p className="flex flex-row gap-24">
-                            <p className="text-2xl">Hendrik</p> 
-                            <p className="text-2xl">+6208123456789 Jalan xyz no 123, sukolilo, surabaya</p> 
-                            <span className="text-dark-blue text-2xl ml-4 cursor-pointer">Ubah</span>
+                            <span className="text-2xl">{userNama}</span> 
+                            <span className="text-2xl">{userAlamat}</span> 
                         </p>
                     </div>
                 </section>

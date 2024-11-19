@@ -1,6 +1,6 @@
 import LogoIkanking from "./LogoIkanking";
 import { useContext, useEffect, useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "./auth";
 import portrait from './assets/portrait.png';
 import search from './assets/loupe.png'
@@ -11,6 +11,7 @@ function PageIkanHias() {
     const [ikan, setIkan] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     const fetchIkansByCategory = async (category) => {
         try {
@@ -30,28 +31,32 @@ function PageIkanHias() {
         }
     }, [selectedCategory]);
 
-        const fetchIkan = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/api/ikanhias');
-                const data = await response.json();
-                setIkan(data);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
+    const fetchIkan = async () => {
+        try {
+            const response = await fetch('http://localhost:5000/api/ikanhias');
+            const data = await response.json();
+            setIkan(data);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
 
-            useEffect(() => {
-                fetchIkan();
-            }, []);
+    useEffect(() => {
+        fetchIkan();
+    }, []);
 
 
-            const handleSearchChange = (event) => {
-                setSearchTerm(event.target.value);
-            };
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
 
-            const filteredIkan = ikan.filter((ikankonsumsi) =>
-                ikankonsumsi.nama.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+    const filteredIkan = ikan.filter((ikankonsumsi) =>
+        ikankonsumsi.nama.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const handleUserIconClick = () => {
+        navigate('/profile'); // Navigasi ke halaman UserInfo
+    };
 
     return (
         <div className="h-screen">
@@ -75,9 +80,14 @@ function PageIkanHias() {
                     {isLoggedIn ? (
                         <div className="flex items-center gap-5">
                             <Link to="/cart" className="w-8 h-8">
-                            <img src={usercart} />  
+                                <img src={usercart} />
                             </Link>
-                            <img src={portrait} alt="User Icon" className="w-8 h-8" />
+                            <img
+                                src={portrait}
+                                alt="User Icon"
+                                className="w-8 h-8 cursor-pointer"
+                                onClick={handleUserIconClick} // Tambahkan event click
+                            />
                             <button onClick={handleLogout} className="bg-red text-white inline-block text-lg py-1 px-4 border-solid border-2 border-red rounded-md hover:bg-white hover:text-red transform transition duration-300">Logout</button>
 
                         </div>
@@ -101,7 +111,7 @@ function PageIkanHias() {
                             <div className="py-5">
                                 <Link onClick={() => setSelectedCategory('laut')} className="text-black hover:text-dark-blue hover:underline underline-offset-4">Ikan Air Laut</Link>
                             </div>
-                            
+
                             <div className="py-5">
                                 <Link onClick={() => setSelectedCategory('tawar')} className="text-black hover:text-dark-blue hover:underline underline-offset-4">Ikan Air Tawar</Link>
                             </div>

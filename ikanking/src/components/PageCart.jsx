@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import LogoIkanking from "./LogoIkanking";
 
 function PageCart() {
     const [cartItems, setCartItems] = useState([]);
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCartItems = async () => {
@@ -35,6 +33,10 @@ function PageCart() {
         fetchCartItems();
     }, [navigate]);
 
+    const handleCartClick = () => {
+        navigate('/checkout'); // Navigasi ke halaman UserInfo
+      };
+
     if (cartItems.length === 0) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -62,7 +64,6 @@ function PageCart() {
                         />
                         <div className="flex-grow">
                             <h2 className="text-xl font-semibold">{item.nama_produk}</h2>
-                            <p>Total: Rp. {item.harga_satuan ? parseFloat(item.harga_satuan).toLocaleString('id-ID'): "Harga tidak tersedia"}</p>
                             <p>Kuantitas: {item.quantity}</p>
                             <p>Total: Rp. {item.harga_total ? parseFloat(item.harga_total).toLocaleString('id-ID'): "Harga tidak tersedia"}</p>
                         </div>
@@ -70,6 +71,12 @@ function PageCart() {
                 ))}
             </div>
         </div>
+
+        <div className="flex justify-center pb-5">
+            <button onClick={handleCartClick} className="bg-dark-blue text-white px-4 py-2 rounded-md hover:scale-105 transform transition duration-300">Beli Sekarang</button>
+        </div>
+
+
         </div>
     );
 }

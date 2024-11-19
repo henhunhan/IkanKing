@@ -1,6 +1,5 @@
-// ContentLanding.jsx
 import { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Tambahkan useNavigate
 import { AuthContext } from './auth';
 import LogoIkanking from "./LogoIkanking";
 import picikankonsum from './assets/ikan-konsum.jpg';
@@ -8,7 +7,12 @@ import picikanhias from './assets/ikan-hias.jpg';
 import portrait from './assets/portrait.png';
 
 function ContentLanding() {
-  const { isLoggedIn, handleLogout } = useContext(AuthContext);
+  const { isLoggedIn} = useContext(AuthContext);
+  const navigate = useNavigate(); // Untuk navigasi
+
+  const handleUserIconClick = () => {
+    navigate('/profile'); // Navigasi ke halaman UserInfo
+  };
 
   return (
     <div className='h-screen'>
@@ -19,8 +23,12 @@ function ContentLanding() {
       <div className='flex justify-end mt-10 mr-24 gap-5'>
         {isLoggedIn ? (
           <div className="flex items-center gap-5">
-            <img src={portrait} alt="User Icon" className="w-8 h-8" />
-            <button onClick={handleLogout} className="button-logout">Logout</button>
+            <img
+              src={portrait}
+              alt="User Icon"
+              className="w-8 h-8 cursor-pointer"
+              onClick={handleUserIconClick} // Tambahkan event click
+            />
           </div>
         ) : (
           <>
