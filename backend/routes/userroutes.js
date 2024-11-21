@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { signup, login, AddtoKeranjang, CartList, GetUserProfile, UpdateAlamatUser, UpdateUsername} = require('../controllers/userController');
+const { signup, login, AddtoKeranjang, CartList, GetUserProfile, UpdateAlamatUser, UpdateUsername, deleteCartItem} = require('../controllers/userController');
 const authtoken= require('../userauthtoken');
 
 // Rute untuk sign-up
@@ -18,5 +18,7 @@ router.get('/profile', authtoken, GetUserProfile);
 router.put('/updatealamat', authtoken, UpdateAlamatUser);
 
 router.put('/username', authtoken, UpdateUsername);
+
+router.put('/:productId', authtoken, deleteCartItem);
 
 module.exports = router;

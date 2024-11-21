@@ -115,6 +115,56 @@ exports.CartList = async (req, res) => {
   }
 };
 
+exports.deleteCartItem = async (req, res) => {
+  try {
+      const { productId } = req.params; // Mendapatkan ID produk dari parameter URL
+      const userId = req.user.user_id; // Mendapatkan ID user dari token (dari middleware auth)
+
+      // Periksa apakah item ada di keranjang user
+      const cartItem = await pool.query(
+          "SELECT * FROM cart WHERE user_id = $1 AND product_id = $2",
+          [userId, productId]
+      );
+
+      if (cartItem.rows.length === 0) {
+          return res.status(404).json({ message: "Item tidak ditemukan di keranjang Anda." });
+      }
+
+      const currentQuantity = cartItem.rows[0].quantity;
+
+      if (currentQuantity > 1) {
+          // Jika jumlah barang lebih dari 1, kurangi jumlahnya
+          const newQuantity = currentQuantity - 1;
+          const newTotalPrice = newQuantity * cartItem.rows[0].harga_total / currentQuantity;
+
+          await pool.query(
+              "UPDATE cart SET quantity = $1, harga_total = $2 WHERE user_id = $3 AND product_id = $4",
+              [newQuantity, newTotalPrice, userId, productId]
+          );
+
+          return res.status(200).json({
+              message: "Jumlah item berhasil dikurangi.",
+              updatedItem: {
+                  product_id: productId,
+                  quantity: newQuantity,
+                  harga_total: newTotalPrice
+              },
+          });
+      } else {
+          // Jika jumlah barang 1, hapus item dari keranjang
+          await pool.query(
+              "DELETE FROM cart WHERE user_id = $1 AND product_id = $2",
+              [userId, productId]
+          );
+
+          return res.status(200).json({ message: "Item berhasil dihapus dari keranjang." });
+      }
+  } catch (error) {
+      console.error("Error updating or deleting cart item:", error);
+      res.status(500).json({ message: "Terjadi kesalahan server." });
+  }
+};
+
 exports.UpdateAlamatUser = async (req, res) => {
   const { alamat, kecamatan, kota } = req.body; // Tambahkan kecamatan dan kota
   const userId = req.user.user_id;
