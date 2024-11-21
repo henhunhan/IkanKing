@@ -9,20 +9,22 @@ function ProductCheckout() {
     const [totalPengiriman, setTotalPengiriman] = useState(0);
     const [userAlamat, setUserAlamat] = useState(""); // Tambahkan state untuk alamat pengguna
     const [userNama, setUserNama] = useState(""); // Tambahkan state untuk nama pengguna
+    const [userKecamatan, setUserKecamatan] = useState(""); // Tambahkan state untuk nama pengguna
+    const [userKota, setUserKota] = useState(""); // Tambahkan state untuk nama pengguna
     const navigate = useNavigate();
 
     const { isLoggedIn } = useContext(AuthContext);
 
     useEffect(() => {
         if (!isLoggedIn) {
-            navigate("/login");
+            // navigate("/login");
             return;
         }
 
         const fetchCartItems = async () => {
             const token = localStorage.getItem("token");
             try {
-                const response = await fetch("http://localhost:5000/api/users/cart", {
+                const response = await fetch("http://localhost:5000/api/cart", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -63,8 +65,11 @@ function ProductCheckout() {
                 }
 
                 const data = await response.json();
-                setUserAlamat(data.alamat || "Alamat belum diisi"); // Simpan alamat
+                setUserAlamat(data.alamat|| "Alamat belum diisi"); // Simpan alamat
+                setUserKecamatan(data.kecamatan || "");
+                setUserKota(data.kota || "");
                 setUserNama(data.username || "Nama belum diisi"); // Simpan nama pengguna
+
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }
@@ -87,8 +92,12 @@ function ProductCheckout() {
                     <div className="border p-4 rounded-md shadow-md">
                         <h2 className="text-xl font-bold mb-4">Alamat Pengiriman</h2>
                         <p className="flex flex-row gap-24">
-                            <span className="text-2xl">{userNama}</span> 
-                            <span className="text-2xl">{userAlamat}</span> 
+                            <span className="text-2xl">{userNama}</span>
+                            <p className="flex gap-1">
+                            <span className="text-2xl">{userAlamat},</span> 
+                            <span className="text-2xl">{userKecamatan},</span> 
+                            <span className="text-2xl">{userKota}</span> 
+                            </p> 
                         </p>
                     </div>
                 </section>

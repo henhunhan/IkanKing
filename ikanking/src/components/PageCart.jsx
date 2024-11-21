@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 
 function PageCart() {
     const [cartItems, setCartItems] = useState([]);
+    const [deliveryCost, setDeliveryCost] = useState(0);
+    const [alamatProduk] = useState("Jakarta"); // Lokasi produk (contoh)
+    const [alamatPembeli] = useState("Surabaya");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -15,7 +18,7 @@ function PageCart() {
             }
 
             try {
-                const response = await fetch("http://localhost:5000/api/users/cart", {
+                const response = await fetch("http://localhost:5000/api/cart", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -27,6 +30,9 @@ function PageCart() {
 
                 const data = await response.json();
                 setCartItems(data);
+
+                // Hitung harga kirim
+                await calculateDeliveryCost();
             } catch (error) {
                 console.error("Error fetching cart items:", error);
             }
@@ -35,47 +41,39 @@ function PageCart() {
         fetchCartItems();
     }, [navigate]);
 
-    const handleCartClick = () => {
-        navigate('/checkout'); // Navigasi ke halaman UserInfo
-    };
-
-    const handleDeleteItem = async (productId) => {
-        const token = localStorage.getItem("token");
-    
+    const calculateDeliveryCost = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/users/${productId}`, {
-                method: "PUT",
+            const response = await fetch("http://localhost:5000/api/cart/calculatedeliverycost", {
+                method: "POST",
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                 },
+                body: JSON.stringify({ lokasiProduk: alamatProduk, lokasiPembeli: alamatPembeli }),
             });
-    
+
             if (!response.ok) {
-                const data = await response.json();
-                console.error("Error:", data.message);
-                return;
+                throw new Error("Failed to calculate delivery cost");
             }
-    
+
             const data = await response.json();
-            console.log(data.message);
-    
-            // Perbarui state setelah item dihapus atau dikurangi
-            setCartItems((prevItems) =>
-                prevItems.map((item) =>
-                    item.product_id === productId
-                        ? {
-                              ...item,
-                              quantity: item.quantity > 1 ? item.quantity - 1 : 0,
-                              harga_total: item.quantity > 1 ? item.harga_total - item.harga_total / item.quantity : 0,
-                          }
-                        : item
-                ).filter((item) => item.quantity > 0)
-            );
+            setDeliveryCost(data.totalHarga);
         } catch (error) {
-            console.error("Error deleting item:", error);
+            console.error("Error calculating delivery cost:", error);
         }
     };
-    
+
+    const handleCartClick = () => {
+        navigate('/checkout');
+    };
+
+    if (cartItems.length === 0) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p className="text-gray-600 text-lg">Keranjang Anda kosong.</p>
+            </div>
+        );
+    }
+
     return (
         <div>
             <div>
@@ -95,26 +93,21 @@ function PageCart() {
                             <div className="flex-grow">
                                 <h2 className="text-xl font-semibold">{item.nama_produk}</h2>
                                 <p>Kuantitas: {item.quantity}</p>
-                                <p>Total: Rp. {item.harga_total ? parseFloat(item.harga_total).toLocaleString('id-ID') : "Harga tidak tersedia"}</p>
+                                <p>Total: Rp. {item.harga_total ? parseFloat(item.harga_total).toLocaleString('id-ID'): "Harga tidak tersedia"}</p>
                             </div>
-                            <button
-                                onClick={() => handleDeleteItem(item.product_id)}
-                                className="bg-red text-white px-4 py-2 rounded-md hover:scale-105 transform transition duration-300"
-                            >
-                                Hapus
-                            </button>
                         </div>
                     ))}
+                </div>
+
+                <div className="mt-10">
+                    <h3 className="text-xl font-bold">Opsi Pengiriman</h3>
+                    <p>Alamat Pengiriman: {alamatPembeli}</p>
+                    <p>Biaya Kirim: Rp. {deliveryCost.toLocaleString("id-ID")}</p>
                 </div>
             </div>
 
             <div className="flex justify-center pb-5">
-                <button
-                    onClick={handleCartClick}
-                    className="bg-dark-blue text-white px-4 py-2 rounded-md hover:scale-105 transform transition duration-300"
-                >
-                    Beli Sekarang
-                </button>
+                <button onClick={handleCartClick} className="bg-dark-blue text-white px-4 py-2 rounded-md hover:scale-105 transform transition duration-300">Beli Sekarang</button>
             </div>
         </div>
     );

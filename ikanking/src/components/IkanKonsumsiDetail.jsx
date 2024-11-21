@@ -44,7 +44,7 @@ function DetailIkanKonsumsi() {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/api/users/product/add', {
+            const response = await fetch('http://localhost:5000/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ function DetailIkanKonsumsi() {
         }
         navigate('/checkout');
         try {
-            const response = await fetch('http://localhost:5000/api/users/product/add', {
+            const response = await fetch('http://localhost:5000/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
