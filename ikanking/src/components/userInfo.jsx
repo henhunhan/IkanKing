@@ -3,8 +3,10 @@ import { AuthContext } from './auth';
 
 function UserInfo() {
   const { handleLogout } = useContext(AuthContext);
-  const [userData, setUserData] = useState({ email: '', alamat: '', username: '' });
+  const [userData, setUserData] = useState({ email: '', alamat: '', username: '', kecamatan: '', kota: '' });
   const [newAlamat, setNewAlamat] = useState('');
+  const [newKecamatan, setNewKecamatan] = useState('');
+  const [newKota, setNewKota] = useState('');
   const [newUsername, setNewUsername] = useState('');
   const [showAlamatModal, setShowAlamatModal] = useState(false);
   const [showUsernameModal, setShowUsernameModal] = useState(false);
@@ -14,11 +16,19 @@ function UserInfo() {
     if (token) {
       try {
         const response = await fetch('http://localhost:5000/api/users/profile', {
-          headers: { 'Authorization': `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
         const data = await response.json();
         if (response.ok) {
-          setUserData({ email: data.email, alamat: data.alamat, username: data.username || '' });
+          setUserData({
+            email: data.email,
+            alamat: data.alamat || '',
+            username: data.username || '',
+            kecamatan: data.kecamatan || '',
+            kota: data.kota || '',
+          });
         } else {
           console.error('Error fetching user data:', data.message);
         }
@@ -38,15 +48,21 @@ function UserInfo() {
       const response = await fetch('http://localhost:5000/api/users/updatealamat', {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ alamat: newAlamat }),
+        body: JSON.stringify({ alamat: newAlamat, kecamatan: newKecamatan, kota: newKota }),
       });
-
       if (response.ok) {
-        setUserData((prevData) => ({ ...prevData, alamat: newAlamat }));
+        setUserData((prevData) => ({
+          ...prevData,
+          alamat: newAlamat,
+          kecamatan: newKecamatan,
+          kota: newKota,
+        }));
         setNewAlamat('');
+        setNewKecamatan('');
+        setNewKota('');
         setShowAlamatModal(false);
       } else {
         const data = await response.json();
@@ -63,14 +79,16 @@ function UserInfo() {
       const response = await fetch('http://localhost:5000/api/users/username', {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username: newUsername }),
       });
-
       if (response.ok) {
-        setUserData((prevData) => ({ ...prevData, username: newUsername }));
+        setUserData((prevData) => ({
+          ...prevData,
+          username: newUsername,
+        }));
         setNewUsername('');
         setShowUsernameModal(false);
       } else {
@@ -89,23 +107,16 @@ function UserInfo() {
         <p className="text-xl text-dark-blue mb-4">Email: {userData.email}</p>
         <p className="text-xl text-dark-blue mb-4">
           Username: {userData.username || 'Username belum diisi'}{' '}
-          <button
-            onClick={() => setShowUsernameModal(true)}
-            className="text-blue-500 underline ml-2"
-          >
+          <button onClick={() => setShowUsernameModal(true)} className="text-blue-500 underline ml-2">
             Ubah
           </button>
         </p>
         <p className="text-xl text-dark-blue mb-4">
-          Alamat: {userData.alamat || 'Alamat belum diisi'}{' '}
-          <button
-            onClick={() => setShowAlamatModal(true)}
-            className="text-blue-500 underline ml-2"
-          >
+          Alamat: {userData.alamat || 'Alamat belum diisi'}, {userData.kecamatan || ''}, {userData.kota || ''}{' '}
+          <button onClick={() => setShowAlamatModal(true)} className="text-blue-500 underline ml-2">
             Ubah
           </button>
         </p>
-
         <button
           onClick={handleLogout}
           className="mt-4 bg-red text-white px-4 py-2 rounded-md w-full hover:scale-105 transform transition duration-300"
@@ -113,7 +124,6 @@ function UserInfo() {
           Logout
         </button>
       </div>
-
       {/* Modal Ubah Alamat */}
       {showAlamatModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
@@ -124,6 +134,20 @@ function UserInfo() {
               placeholder="Masukkan alamat baru"
               value={newAlamat}
               onChange={(e) => setNewAlamat(e.target.value)}
+              className="border rounded-md p-2 w-full mb-4"
+            />
+            <input
+              type="text"
+              placeholder="Masukkan kecamatan baru"
+              value={newKecamatan}
+              onChange={(e) => setNewKecamatan(e.target.value)}
+              className="border rounded-md p-2 w-full mb-4"
+            />
+            <input
+              type="text"
+              placeholder="Masukkan kota baru"
+              value={newKota}
+              onChange={(e) => setNewKota(e.target.value)}
               className="border rounded-md p-2 w-full mb-4"
             />
             <div className="flex justify-end gap-4">
@@ -143,7 +167,6 @@ function UserInfo() {
           </div>
         </div>
       )}
-
       {/* Modal Ubah Username */}
       {showUsernameModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">

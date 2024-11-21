@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import LogoIkanking from "./LogoIkanking";
+import { useNavigate } from "react-router-dom";
 
 function PageCart() {
     const [cartItems, setCartItems] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCartItems = async () => {
