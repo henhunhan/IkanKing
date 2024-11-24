@@ -1,85 +1,125 @@
 import LogoIkanking from "./LogoIkanking";
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "./auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import portrait from './assets/portrait.png';
+import usercart from './assets/shopping-cart.png';
 
 function ProductCheckout() {
     const [cartItems, setCartItems] = useState([]);
     const [totalHargaBarang, setTotalHargaBarang] = useState(0);
     const [totalPengiriman, setTotalPengiriman] = useState(0);
-    const [userAlamat, setUserAlamat] = useState(""); // Tambahkan state untuk alamat pengguna
-    const [userNama, setUserNama] = useState(""); // Tambahkan state untuk nama pengguna
-    const [userKecamatan, setUserKecamatan] = useState(""); // Tambahkan state untuk nama pengguna
-    const [userKota, setUserKota] = useState(""); // Tambahkan state untuk nama pengguna
+    const [userAlamat, setUserAlamat] = useState("");
+    const [userNama, setUserNama] = useState("");
+    const [userKecamatan, setUserKecamatan] = useState("");
+    const [userKota, setUserKota] = useState("");
     const navigate = useNavigate();
 
     const { isLoggedIn } = useContext(AuthContext);
 
-    useEffect(() => {
-        if (!isLoggedIn) {
-            // navigate("/login");
-            return;
+    const handleUserIconClick = () => {
+        navigate('/profile'); // Navigasi ke halaman UserInfo
+    };
+
+    // Fungsi untuk mengambil item dalam keranjang
+    const fetchCartItems = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch("http://localhost:5000/api/cart", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) throw new Error("Failed to fetch cart items");
+
+            const data = await response.json();
+            setCartItems(data);
+
+            // Hitung total harga barang
+            const totalHarga = data.reduce((acc, item) => acc + parseFloat(item.harga_total || 0), 0);
+            setTotalHargaBarang(totalHarga);
+        } catch (error) {
+            console.error("Error fetching cart:", error);
         }
+    };
 
-        const fetchCartItems = async () => {
-            const token = localStorage.getItem("token");
-            try {
-                const response = await fetch("http://localhost:5000/api/cart", {
+    // Fungsi untuk mengambil data pengguna
+    const fetchUserData = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch("http://localhost:5000/api/users/profile", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+
+            if (!response.ok) throw new Error("Failed to fetch user data");
+
+            const data = await response.json();
+            setUserAlamat(data.alamat || "Alamat belum diisi");
+            setUserKecamatan(data.kecamatan || "");
+            setUserKota(data.kota || "");
+            setUserNama(data.username || "Nama belum diisi");
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    };
+
+    // Fungsi untuk menghitung biaya pengiriman
+    const calculateDeliveryCost = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            // Kirim permintaan secara paralel untuk semua item dalam cart
+            const promises = cartItems.map(async (item) => {
+                const response = await fetch("http://localhost:5000/api/cart/calculatedeliverycost", {
+                    method: "POST",
                     headers: {
+                        "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
+                    body: JSON.stringify({
+                        product_id: item.product_id,
+                        kota_penjual: item.lokasi_product,
+                        kota_pembeli: userKota,
+                    }),
                 });
 
-                if (!response.ok) {
-                    throw new Error("Failed to fetch cart items");
-                }
+                if (!response.ok) throw new Error("Failed to calculate delivery cost");
 
-                const data = await response.json();
-                setCartItems(data);
+                const { deliveryCost } = await response.json();
 
-                // Hitung total harga barang
-                const totalHarga = data.reduce(
-                    (acc, item) => acc + parseFloat(item.harga_total || 0),
-                    0
-                );
+                // Tambahkan biaya pengiriman ke item
+                return { ...item, deliveryCost };
+            });
 
-                const totalOngkir = data.length * 18000; // Asumsi pengiriman Rp. 18.000 per item
-                setTotalHargaBarang(totalHarga);
-                setTotalPengiriman(totalOngkir);
-            } catch (error) {
-                console.error("Error fetching cart:", error);
-            }
-        };
+            // Tunggu semua permintaan selesai
+            const updatedCartItems = await Promise.all(promises);
 
-        const fetchUserData = async () => {
-            const token = localStorage.getItem("token");
-            try {
-                const response = await fetch("http://localhost:5000/api/users/profile", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+            // Hitung total biaya pengiriman
+            const totalOngkir = updatedCartItems.reduce(
+                (acc, item) => acc + (item.deliveryCost || 0),
+                0
+            );
 
-                if (!response.ok) {
-                    throw new Error("Failed to fetch user data");
-                }
+            // Perbarui state
+            setCartItems(updatedCartItems);
+            setTotalPengiriman(totalOngkir);
+        } catch (error) {
+            console.error("Error calculating delivery cost:", error);
+        }
+    };
 
-                const data = await response.json();
-                setUserAlamat(data.alamat|| "Alamat belum diisi"); // Simpan alamat
-                setUserKecamatan(data.kecamatan || "");
-                setUserKota(data.kota || "");
-                setUserNama(data.username || "Nama belum diisi"); // Simpan nama pengguna
+    // useEffect untuk mengambil data awal
+    useEffect(() => {
+        if (isLoggedIn) {
+            fetchCartItems();
+            fetchUserData();
+        }
+    }, [isLoggedIn]);
 
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-            }
-        };
+    // useEffect untuk menghitung biaya pengiriman setelah cartItems dan userKota diperbarui
+    useEffect(() => {
+        if (cartItems.length > 0 && userKota) calculateDeliveryCost();
+    }, [cartItems, userKota]);
 
-        fetchCartItems();
-        fetchUserData();
-    }, [isLoggedIn, navigate]);
-
-    const totalKeseluruhan = totalHargaBarang + totalPengiriman;
+    const totalKeseluruhan = parseFloat(totalHargaBarang || 0) + parseFloat(totalPengiriman || 0);
 
     return (
         <div>
@@ -87,24 +127,47 @@ function ProductCheckout() {
                 <LogoIkanking />
             </div>
 
-            <div className="p-20">
+            <div className="flex justify-end mt-10 mr-24 gap-5">
+                {isLoggedIn ? (
+                    <div className="flex items-center gap-5">
+                                                    <Link to="/cart" className="w-8 h-8">
+                                <img src={usercart} />
+                            </Link>
+                        <img
+                            src={portrait}
+                            alt="User Icon"
+                            className="w-8 h-8 cursor-pointer"
+                            onClick={handleUserIconClick}
+                        />
+                    </div>
+                ) : (
+                    <>
+                        <Link to="/login" className="button-login">
+                            Log In
+                        </Link>
+                        <Link to="/signup" className="button-signup">
+                            Sign Up
+                        </Link>
+                    </>
+                )}
+            </div>
+
+            <div className="px-20">
                 <section className="mt-8">
                     <div className="border p-4 rounded-md shadow-md">
                         <h2 className="text-xl font-bold mb-4">Alamat Pengiriman</h2>
-                        <p className="flex flex-row gap-24">
+                        <p className="flex flex-row gap-20">
                             <span className="text-2xl">{userNama}</span>
-                            <p className="flex gap-1">
-                            <span className="text-2xl">{userAlamat},</span> 
-                            <span className="text-2xl">{userKecamatan},</span> 
-                            <span className="text-2xl">{userKota}</span> 
-                            </p> 
+                            <span className="text-2xl">
+                                {userAlamat}, {userKecamatan}, {userKota}
+                            </span>
                         </p>
                     </div>
                 </section>
 
                 <section className="mt-8">
                     {cartItems.map((item) => (
-                        <div key={item.id} className="border p-4 rounded-md shadow-md mb-4">
+                        <div key={item.product_id} className="border p-4 rounded-md shadow-md mb-4">
                             <div className="flex items-center space-x-4">
                                 <img
                                     src={item.image_url}
@@ -122,9 +185,8 @@ function ProductCheckout() {
                             </div>
                             <div className="bg-blue-100 p-2 rounded-md mt-4">
                                 <p className="flex justify-end items-center gap-8 text-lg">
-                                    Opsi pengiriman: <span>Hemat</span>
-                                    <span className="text-blue-500 cursor-pointer">Ubah</span>
-                                    <span>Rp. 18.000</span>
+                                    Biaya Kirim: Rp.{" "}
+                                    {(item.deliveryCost || 0).toLocaleString("id-ID")}
                                 </p>
                             </div>
                         </div>

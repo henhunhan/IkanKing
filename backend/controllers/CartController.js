@@ -1,44 +1,48 @@
 const pool = require('../db'); // Pastikan kita menggunakan koneksi database
 const axios = require('axios');
+const ONGKOS_PER_KM = 20;
 
 exports.AddtoKeranjang = async (req, res) => {
-    const { product_id, quantity, harga_total } = req.body;
-  
-    try {
-        const user_id = req.user.user_id;
-  
-        // Ambil nama produk dan image_url berdasarkan product_id
-        const productResult = await pool.query(
-            `SELECT nama, gambar_url FROM allproduct WHERE product_id = $1`,
-            [product_id]
-        );
-  
-        const nama_produk = productResult.rows[0]?.nama;
-        const image_url = productResult.rows[0]?.gambar_url;
-  
-        if (!nama_produk || !image_url) {
-            return res.status(404).json({ error: 'Product not found or image URL missing' });
-        }
-  
-        // Simpan data ke tabel cart
-        await pool.query(
-            `INSERT INTO cart (user_id, product_id, quantity, harga_total, nama_produk, image_url)
-            VALUES ($1, $2, $3, $4, $5, $6)
-            ON CONFLICT (user_id, product_id)
-            DO UPDATE SET 
-                quantity = cart.quantity + $3, 
-                harga_total = cart.harga_total + $4,
-                nama_produk = $5,
-                image_url = $6`,
-            [user_id, product_id, quantity, harga_total, nama_produk, image_url]
-        );
-  
-        res.status(200).json({ message: 'Product added to cart' });
-    } catch (error) {
-        console.error('Error adding to cart:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-  };
+  const { product_id, quantity, harga_total } = req.body;
+
+  try {
+      const user_id = req.user.user_id;
+
+      // Ambil nama produk, gambar_url, dan lokasi (kota) berdasarkan product_id
+      const productResult = await pool.query(
+          `SELECT nama, gambar_url, kota FROM allproduct WHERE product_id = $1`,
+          [product_id]
+      );
+
+      const nama_produk = productResult.rows[0]?.nama;
+      const image_url = productResult.rows[0]?.gambar_url;
+      const lokasi_product = productResult.rows[0]?.kota;
+
+
+      if (!nama_produk || !image_url || !lokasi_product) {
+          return res.status(404).json({ error: 'Product not found, image URL or location missing' });
+      }
+
+      // Simpan data ke tabel cart
+      await pool.query(
+          `INSERT INTO cart (user_id, product_id, quantity, harga_total, nama_produk, image_url, lokasi_product)
+          VALUES ($1, $2, $3, $4, $5, $6, $7)
+          ON CONFLICT (user_id, product_id)
+          DO UPDATE SET 
+              quantity = cart.quantity + $3, 
+              harga_total = cart.harga_total + $4,
+              nama_produk = $5,
+              image_url = $6,
+              lokasi_product = $7`,
+          [user_id, product_id, quantity, harga_total, nama_produk, image_url, lokasi_product]
+      );
+
+      res.status(200).json({ message: 'Product added to cart' });
+  } catch (error) {
+      console.error('Error adding to cart:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
   exports.CartList = async (req, res) => {
     try {
@@ -119,69 +123,70 @@ exports.AddtoKeranjang = async (req, res) => {
   };
 
   exports.getDeliveryCost = async (req, res) => {
-    const { lokasiProduk, lokasiPembeli } = req.body;
-  
     try {
-        // Mendapatkan koordinat lokasi produk
-        const lokasiProdukResponse = await axios.get("https://nominatim.openstreetmap.org/search", {
-            params: {
-                q: lokasiProduk,
-                format: "json",
-            },
-            headers: {
-              "User-Agent": "IkanKing",
-          },
-        });
-  
-        const lokasiPembeliResponse = await axios.get("https://nominatim.openstreetmap.org/search", {
-            params: {
-                q: lokasiPembeli,
-                format: "json",
-            },
-            headers: {
-              "User-Agent": "IkanKing",
-          },
-        });
-  
-        const lokasiProdukData = lokasiProdukResponse.data[0];
-        const lokasiPembeliData = lokasiPembeliResponse.data[0];
-  
-        if (!lokasiProdukData || !lokasiPembeliData) {
-            return res.status(400).json({ message: "Lokasi tidak valid" });
+        const { product_id, kota_pembeli } = req.body;
+
+        // Validasi input
+        if (!product_id || !kota_pembeli) {
+            return res.status(400).json({ message: "Product ID dan kota pembeli harus diisi." });
         }
-  
-        const { lat: latProduk, lon: lonProduk } = lokasiProdukData;
-        const { lat: latPembeli, lon: lonPembeli } = lokasiPembeliData;
-  
-        console.log(`Koordinat Produk: ${latProduk}, ${lonProduk}`);
-        console.log(`Koordinat Pembeli: ${latPembeli}, ${lonPembeli}`);
-  
-        // Haversine Formula untuk menghitung jarak
-        const toRadians = (degree) => (degree * Math.PI) / 180;
-        const earthRadius = 6371; // Radius bumi dalam km
-  
-        const dLat = toRadians(latPembeli - latProduk);
-        const dLon = toRadians(lonPembeli - lonProduk);
-  
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(toRadians(latProduk)) *
-                Math.cos(toRadians(latPembeli)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = earthRadius * c; // Jarak dalam km
-  
-        console.log(`Jarak Dihitung: ${distance} km`);
-  
-        // Kalkulasi harga kirim
-        const hargaPerKm = 5000; // Rp. 5.000 per km
-        const totalHarga = Math.ceil(distance) * hargaPerKm;
-  
-        console.log(`Total Harga Kirim: Rp. ${totalHarga}`);
-        res.status(200).json({ distance: distance.toFixed(2), totalHarga });
+
+        // Ambil lokasi kota penjual dari tabel all_product
+        const productResult = await pool.query(
+            `SELECT kota FROM allproduct WHERE product_id = $1`,
+            [product_id]
+        );
+
+        if (productResult.rows.length === 0) {
+            return res.status(404).json({ message: "Produk tidak ditemukan." });
+        }
+
+        const kota_penjual = productResult.rows[0].kota;
+
+        // Ambil jarak antar kota dari tabel jarakkota
+        const query = `
+          SELECT jarak_km 
+          FROM jarakkota 
+          WHERE kota_pembeli = $1 AND kota_penjual = $2
+        `;
+        const result = await pool.query(query, [kota_pembeli, kota_penjual]);
+
+        // Validasi jika jarak tidak ditemukan
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                message: `Jarak antara ${kota_pembeli} dan ${kota_penjual} tidak ditemukan.`,
+            });
+        }
+
+        const distance = parseFloat(result.rows[0].jarak_km);
+
+        // Validasi jika distance tidak valid
+        if (isNaN(distance) || distance <= 0) {
+            return res.status(400).json({
+                message: "Jarak tidak valid. Pastikan data jarak dalam database benar.",
+            });
+        }
+
+        // Hitung ongkos kirim (asumsi biaya tetap per km)
+        const deliveryCost = distance * ONGKOS_PER_KM;
+
+        // Validasi deliveryCost jika tidak valid
+        if (isNaN(deliveryCost) || deliveryCost <= 0) {
+            return res.status(400).json({
+                message: "Ongkos kirim tidak valid. Pastikan data biaya per km benar.",
+            });
+        }
+
+        // Respon hasil dengan `deliveryCost` sebagai angka
+        res.status(200).json({
+            kota_pembeli,
+            kota_penjual,
+            distance: `${distance} km`,
+            deliveryCost, // Kirim sebagai angka tanpa format string
+        });
     } catch (error) {
-        console.error("Error:", error.message);
-        res.status(500).json({ message: "Gagal menghitung harga kirim" });
+        console.error("Error menghitung ongkos kirim:", error.message);
+        res.status(500).json({ message: "Gagal menghitung ongkos kirim" });
     }
-  };
+};
+

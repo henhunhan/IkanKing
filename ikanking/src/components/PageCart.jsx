@@ -4,9 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 function PageCart() {
     const [cartItems, setCartItems] = useState([]);
-    const [deliveryCost, setDeliveryCost] = useState(0);
-    const [alamatProduk] = useState("Jakarta"); // Lokasi produk (contoh)
-    const [alamatPembeli] = useState("Surabaya");
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -32,7 +30,6 @@ function PageCart() {
                 setCartItems(data);
 
                 // Hitung harga kirim
-                await calculateDeliveryCost();
             } catch (error) {
                 console.error("Error fetching cart items:", error);
             }
@@ -40,27 +37,6 @@ function PageCart() {
 
         fetchCartItems();
     }, [navigate]);
-
-    const calculateDeliveryCost = async () => {
-        try {
-            const response = await fetch("http://localhost:5000/api/cart/calculatedeliverycost", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ lokasiProduk: alamatProduk, lokasiPembeli: alamatPembeli }),
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to calculate delivery cost");
-            }
-
-            const data = await response.json();
-            setDeliveryCost(data.totalHarga);
-        } catch (error) {
-            console.error("Error calculating delivery cost:", error);
-        }
-    };
 
     const handleCartClick = () => {
         navigate('/checkout');
@@ -93,16 +69,10 @@ function PageCart() {
                             <div className="flex-grow">
                                 <h2 className="text-xl font-semibold">{item.nama_produk}</h2>
                                 <p>Kuantitas: {item.quantity}</p>
-                                <p>Total: Rp. {item.harga_total ? parseFloat(item.harga_total).toLocaleString('id-ID'): "Harga tidak tersedia"}</p>
+                                <p>Total: Rp. {item.harga_total ? parseFloat(item.harga_total).toLocaleString('id-ID') : "Harga tidak tersedia"}</p>
                             </div>
                         </div>
                     ))}
-                </div>
-
-                <div className="mt-10">
-                    <h3 className="text-xl font-bold">Opsi Pengiriman</h3>
-                    <p>Alamat Pengiriman: {alamatPembeli}</p>
-                    <p>Biaya Kirim: Rp. {deliveryCost.toLocaleString("id-ID")}</p>
                 </div>
             </div>
 
