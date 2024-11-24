@@ -145,7 +145,7 @@ function UserInfo() {
             />
             <input
               type="text"
-              placeholder="Masukkan kota baru"
+              placeholder="Masukkan kota baru (Kapital)"
               value={newKota}
               onChange={(e) => setNewKota(e.target.value)}
               className="border rounded-md p-2 w-full mb-4"
