@@ -1,7 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import LogoIkanking from './LogoIkanking';
-import LocationDropdown from './location';
 import cart from './assets/add-shopping-cart.png';
 import portrait from './assets/portrait.png';
 import { AuthContext } from './auth';
@@ -144,7 +143,7 @@ function DetailIkanHias() {
                         <img src={ikanhias.gambar_url} alt={ikanhias.nama} className="w-full h-full object-contain" />
                     </div>
 
-                    <div className="w-1/2 pt-2 pb-7 pr-2 pl-4 flex flex-col justify-between">
+                    <div className="w-1/2 pt-2 pb-7 pr-2 pl-4 flex flex-col justify-center">
                         <div>
                             <h1 className="text-4xl font-bold text-gray-800">{ikanhias.nama}</h1>
                             <p className="text-3xl text-dark-blue font-bold mt-6 bg-light-gray px-5 py-4">
@@ -153,7 +152,7 @@ function DetailIkanHias() {
                         </div>
 
                         <div className="space-y-4">
-                            <LocationDropdown />
+
                             <div className="flex items-center space-x-4">
                                 <p className="text-gray-600">Ongkos Kirim:</p>
                                 <span className="text-gray-800">Rp. 13.000</span>
