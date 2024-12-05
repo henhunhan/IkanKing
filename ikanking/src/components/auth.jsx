@@ -15,6 +15,38 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  // Fungsi untuk logout otomatis jika token expired
+  const checkTokenExpiry = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await fetch("http://localhost:5000/api/protected", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 401) {
+        // Jika token expired, logout pengguna
+        handleLogout();
+      }
+    } catch (error) {
+      console.error('Error checking token expiry:', error);
+    }
+  };
+
+  // Tambahkan efek untuk mengecek token setiap beberapa detik
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isLoggedIn) {
+        checkTokenExpiry();
+      }
+    }, 30000); // Cek setiap 30 detik
+
+    return () => clearInterval(interval); // Bersihkan interval saat komponen unmount
+  }, [isLoggedIn]);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);

@@ -1,6 +1,6 @@
 const pool = require('../db'); // Pastikan kita menggunakan koneksi database
 const axios = require('axios');
-const ONGKOS_PER_KM = 20;
+const ONGKOS_PER_KM = 9;
 
 exports.AddtoKeranjang = async (req, res) => {
   const { product_id, quantity, harga_total } = req.body;
@@ -54,7 +54,8 @@ exports.AddtoKeranjang = async (req, res) => {
           nama_produk,
           quantity,
           harga_total,
-          image_url
+          image_url,
+          status
         FROM cart
         WHERE user_id = $1
       `;
@@ -189,4 +190,73 @@ exports.AddtoKeranjang = async (req, res) => {
         res.status(500).json({ message: "Gagal menghitung ongkos kirim" });
     }
 };
+
+exports.checkoutCart = async (req, res) => {
+    try {
+        const user_id = req.user.user_id;
+
+        // Ambil total harga barang dari keranjang pengguna
+        const cartResult = await pool.query(
+            `SELECT SUM(harga_total) AS total_harga FROM cart WHERE user_id = $1`,
+            [user_id]
+        );
+
+        const totalHarga = parseFloat(cartResult.rows[0]?.total_harga || 0);
+
+        // Ambil saldo pengguna
+        const userResult = await pool.query(
+            `SELECT saldo FROM users WHERE id = $1`,
+            [user_id]
+        );
+
+        const saldo = parseFloat(userResult.rows[0]?.saldo || 0);
+
+        if (saldo < totalHarga) {
+            return res.status(400).json({
+                message: "Saldo tidak mencukupi untuk melakukan pembayaran.",
+            });
+        }
+
+        // Kurangi saldo pengguna
+        const updatedSaldo = saldo - totalHarga;
+        await pool.query(
+            `UPDATE users SET saldo = $1 WHERE id = $2`,
+            [updatedSaldo, user_id]
+        );
+
+        // Tandai semua item di keranjang sebagai "paid"
+        await pool.query(
+            `UPDATE cart SET status = 'paid' WHERE user_id = $1`,
+            [user_id]
+        );
+
+        res.status(200).json({
+            message: "Pembayaran berhasil.",
+            saldo: updatedSaldo,
+        });
+    } catch (error) {
+        console.error("Error during checkout:", error);
+        res.status(500).json({ message: "Gagal melakukan pembayaran." });
+    }
+};
+
+exports.setCartPending = async (req, res) => {
+    try {
+        const user_id = req.user.user_id;
+
+        // Tandai semua item di keranjang sebagai "pending"
+        await pool.query(
+            `UPDATE cart SET status = 'pending' WHERE user_id = $1`,
+            [user_id]
+        );
+
+        res.status(200).json({
+            message: "Keranjang berhasil diatur menjadi status pending.",
+        });
+    } catch (error) {
+        console.error("Error setting cart status to pending:", error);
+        res.status(500).json({ message: "Gagal mengatur status keranjang." });
+    }
+};
+
 

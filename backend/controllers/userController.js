@@ -80,7 +80,7 @@ exports.GetUserProfile = async (req, res) => {
 
   try {
     const result = await pool.query(
-      'SELECT email, alamat, kecamatan, kota, username FROM users WHERE id = $1',
+      'SELECT email, alamat, kecamatan, kota, username, saldo FROM users WHERE id = $1',
       [id]
     );
     if (result.rows.length === 0) {
@@ -94,6 +94,31 @@ exports.GetUserProfile = async (req, res) => {
     res.status(500).json({ message: 'Terjadi kesalahan saat mengambil data pengguna.' });
   }
 };
+
+exports.UpdateSaldo = async (req, res) => {
+  const { saldo } = req.body; // Saldo tambahan dari request
+  const userId = req.user.user_id;
+
+  try {
+    // Ambil saldo saat ini dari database
+    const result = await pool.query('SELECT saldo FROM users WHERE id = $1', [userId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Pengguna tidak ditemukan.' });
+    }
+
+    const currentSaldo = parseFloat(result.rows[0].saldo) || 0; // Default ke 0 jika null
+    const updatedSaldo = currentSaldo + parseFloat(saldo); // Tambahkan saldo baru ke saldo lama
+
+    // Update saldo di database
+    await pool.query('UPDATE users SET saldo = $1 WHERE id = $2', [updatedSaldo, userId]);
+
+    res.status(200).json({ message: 'Saldo berhasil diperbarui', saldo: updatedSaldo });
+  } catch (error) {
+    console.error('Error updating saldo:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan saat memperbarui saldo.' });
+  }
+};
+
 
 
 

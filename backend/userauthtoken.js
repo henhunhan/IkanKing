@@ -16,6 +16,12 @@ const authorize = (req, res, next) => {
     next();
   } catch (error) {
     console.error('Authorization error:', error);
+
+    if (error.name === 'TokenExpiredError') {
+      // Jika token telah kedaluwarsa, kirimkan respons khusus
+      return res.status(401).json({ error: 'Token expired' });
+    }
+
     res.status(403).json({ error: 'Forbidden: Invalid token' });
   }
 };

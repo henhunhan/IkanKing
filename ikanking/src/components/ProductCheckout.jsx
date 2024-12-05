@@ -106,6 +106,31 @@ function ProductCheckout() {
         }
     };
 
+    const handlePayment = async () => {
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch("http://localhost:5000/api/cart/checkout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert("Pembayaran berhasil!");
+                navigate("/"); // Redirect ke halaman profil setelah pembayaran berhasil
+            } else {
+                alert(data.message || "Gagal melakukan pembayaran.");
+            }
+        } catch (error) {
+            console.error("Error during payment:", error);
+            alert("Terjadi kesalahan saat melakukan pembayaran.");
+        }
+    };
+
     // useEffect untuk mengambil data awal
     useEffect(() => {
         if (isLoggedIn) {
@@ -130,9 +155,9 @@ function ProductCheckout() {
             <div className="flex justify-end mt-10 mr-24 gap-5">
                 {isLoggedIn ? (
                     <div className="flex items-center gap-5">
-                                                    <Link to="/cart" className="w-8 h-8">
-                                <img src={usercart} />
-                            </Link>
+                        <Link to="/cart" className="w-8 h-8">
+                            <img src={usercart} />
+                        </Link>
                         <img
                             src={portrait}
                             alt="User Icon"
@@ -202,6 +227,12 @@ function ProductCheckout() {
                             Total: Rp. {totalKeseluruhan.toLocaleString("id-ID")}
                         </p>
                     </div>
+                    <button
+                        onClick={handlePayment}
+                        className="bg-dark-blue text-white px-6 py-2 rounded-md mt-4 hover:bg-green-600"
+                    >
+                        Bayar Sekarang
+                    </button>
                 </section>
             </div>
         </div>
