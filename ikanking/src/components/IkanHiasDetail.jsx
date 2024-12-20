@@ -16,7 +16,7 @@ function DetailIkanHias() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/ikanhias/product/${id}`);
+                const response = await fetch(`http://localhost/api/ikanhias/product/${id}`);
                 const data = await response.json();
                 setProduct(data);
             } catch (error) {
@@ -42,7 +42,7 @@ function DetailIkanHias() {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/api/cart/add', {
+            const response = await fetch('http://localhost/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ function DetailIkanHias() {
         }
         navigate('/checkout');
         try {
-            const response = await fetch('http://localhost:5000/api/cart/add', {
+            const response = await fetch('http://localhost/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

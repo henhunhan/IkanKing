@@ -48,7 +48,7 @@ function UserInfo() {
   const handleAlamatUpdate = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:5000/api/users/updatealamat', {
+      const response = await fetch('http://localhost/api/users/updatealamat', {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -80,7 +80,7 @@ function UserInfo() {
   const handleUsernameUpdate = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:5000/api/users/username', {
+      const response = await fetch('http://localhost/api/users/username', {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -107,7 +107,7 @@ function UserInfo() {
   const handleSaldoUpdate = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:5000/api/users/saldo', {
+      const response = await fetch('http://localhost/api/users/saldo', {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,

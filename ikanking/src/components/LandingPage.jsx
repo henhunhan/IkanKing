@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'; // Tambahkan useNavigate
 import { AuthContext } from './auth';
 import LogoIkanking from "./LogoIkanking";
 import picikankonsum from './assets/ikan-konsum.jpg';
-import picikanhias from './assets/ikan-hias.jpg';
+import picikanhias from './assets/Ikan-hias.jpg';
 import portrait from './assets/portrait.png';
 
 function ContentLanding() {

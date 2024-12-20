@@ -15,7 +15,9 @@ router.put('/updatealamat', authtoken, UpdateAlamatUser);
 
 router.put('/username', authtoken, UpdateUsername);
 
-router.put('/saldo', authtoken, UpdateSaldo)
+router.put('/saldo', authtoken, UpdateSaldo);
+
+router.get('protected', authtoken);
  
 
 module.exports = router;

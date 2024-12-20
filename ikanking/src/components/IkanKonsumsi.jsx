@@ -6,6 +6,7 @@ import { AuthContext } from "./auth";
 import portrait from './assets/portrait.png';
 import search from './assets/loupe.png';
 import usercart from './assets/shopping-cart.png';
+import dataikan from './allikan.json'
 
 
 function PageIkanKonsumsi() {
@@ -13,47 +14,41 @@ function PageIkanKonsumsi() {
     const [ikans, setIkans] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [filteredIkans, setFilteredIkans] = useState([]);
     const navigate = useNavigate();
 
-    const fetchIkansByCategory = async (category) => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/ikankonsumsi/category/${category}`);
-            const data = await response.json();
-            setIkans(data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-
     useEffect(() => {
-        if (selectedCategory) {
-            fetchIkansByCategory(selectedCategory);
-        } else {
-            fetchIkans();
-        }
-    }, [selectedCategory]);
-
-    const fetchIkans = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/api/ikankonsumsi');
-            const data = await response.json();
-            setIkans(data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchIkans();
+        const fetchIkanKonsumsi = () => {
+            const ikanKonsumsi = dataikan.ikan.filter(item => item.tipe === "ikan-konsumsi");
+            setIkans(ikanKonsumsi);
+            setFilteredIkans(ikanKonsumsi);
+        };
+        fetchIkanKonsumsi();
     }, []);
 
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
-    };
+    useEffect(() => {
+        const filtered = ikans.filter(ikan => {
+            if (selectedCategory === 'laut') return ikan.category === 'laut';
+            if (selectedCategory === 'payau') return ikan.category === 'payau';
+            if (selectedCategory === 'tawar') return ikan.category === 'tawar';
+            return true; // Jika kategori kosong, tampilkan semua
+        });
+    
+        setFilteredIkans(filtered);
+    }, [selectedCategory, ikans]);
 
-    const filteredIkans = ikans.filter((ikankonsumsi) =>
-        ikankonsumsi.nama.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    // Handle input pencarian
+    const handleSearch = (e) => {
+        const term = e.target.value.toLowerCase();
+        setSearchTerm(term);
+
+        const filtered = ikans.filter(ikan => 
+            ikan.nama.toLowerCase().includes(term) || 
+            ikan.kota.toLowerCase().includes(term) || 
+            ikan.provinsi.toLowerCase().includes(term)
+        );
+        setFilteredIkans(filtered);
+    };
 
     const handleUserIconClick = () => {
         navigate('/profile'); // Navigasi ke halaman UserInfo
@@ -73,7 +68,7 @@ function PageIkanKonsumsi() {
                             placeholder="Search....."
                             className="w-full outline-none"
                             value={searchTerm}
-                            onChange={handleSearchChange}
+                            onChange={handleSearch}
                         />
                         <button className="w-8 h-8" type="submit"><img src={search} alt="Search" /></button>
                     </form>

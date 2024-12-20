@@ -1,0 +1,76 @@
+services:
+  app:
+    build:
+      context: ./ikanking
+      dockerfile: dockerfile.frontend
+    container_name: ikankingfrontend
+    expose:
+      - "3000"
+    environment:
+      - REACT_APP_API_URL=https://lai24b-k10.tekomits.my.id
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bridge
+    restart: always
+
+  postgres:
+    image: postgres:latest
+    container_name: postgresIkanking
+    ports:
+      []
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Ardthian123
+      - POSTGRES_DB=IkanKing
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+    networks:
+      - bridge
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: dockerfile.backend
+    container_name: backendIkanking
+    ports:
+      []
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=Ardthian123
+      - DB_NAME=IkanKing
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bridge
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - 5019:80
+    depends_on:
+      - app
+      - backend
+    networks:
+      - bridge
+
+networks:
+  bridge:
+    driver: bridge
+
+volumes:
+  postgres_data:

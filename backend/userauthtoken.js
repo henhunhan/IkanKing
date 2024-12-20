@@ -11,7 +11,7 @@ const authorize = (req, res, next) => {
 
   try {
     // Verifikasi token dan tambahkan user_id ke req.user
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex'));
     req.user = { user_id: decoded.user_id };
     next();
   } catch (error) {

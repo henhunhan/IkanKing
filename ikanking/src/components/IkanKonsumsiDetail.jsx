@@ -16,7 +16,7 @@ function DetailIkanKonsumsi() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/ikankonsumsi/product/${id}`);
+                const response = await fetch(`http://localhost/api/ikankonsumsi/product/${id}`);
                 const data = await response.json();
                 setProduct(data);
             } catch (error) {
@@ -43,7 +43,7 @@ function DetailIkanKonsumsi() {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/api/cart/add', {
+            const response = await fetch('http://localhost/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ function DetailIkanKonsumsi() {
         }
         navigate('/checkout');
         try {
-            const response = await fetch('http://localhost:5000/api/cart/add', {
+            const response = await fetch('http://localhost/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

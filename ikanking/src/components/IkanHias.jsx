@@ -5,54 +5,47 @@ import { AuthContext } from "./auth";
 import portrait from './assets/portrait.png';
 import search from './assets/loupe.png'
 import usercart from './assets/shopping-cart.png'
+import dataikan from './allikan.json'
 
 function PageIkanHias() {
     const { isLoggedIn, handleLogout } = useContext(AuthContext);
-    const [ikan, setIkan] = useState([]);
+    const [ikans, setIkans] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
+    const [filteredIkans, setFilteredIkans] = useState([]);
     const navigate = useNavigate();
 
-    const fetchIkansByCategory = async (category) => {
-        try {
-            const response = await fetch(`http://localhost:5000/api/ikanhias/category/${category}`);
-            const data = await response.json();
-            setIkan(data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-
     useEffect(() => {
-        if (selectedCategory) {
-            fetchIkansByCategory(selectedCategory);
-        } else {
-            fetchIkan();
-        }
-    }, [selectedCategory]);
-
-    const fetchIkan = async () => {
-        try {
-            const response = await fetch('http://localhost:5000/api/ikanhias');
-            const data = await response.json();
-            setIkan(data);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchIkan();
+        const fetchIkanKonsumsi = () => {
+            const ikanKonsumsi = dataikan.ikan.filter(item => item.tipe === "ikan-hias");
+            setIkans(ikanKonsumsi);
+            setFilteredIkans(ikanKonsumsi);
+        };
+        fetchIkanKonsumsi();
     }, []);
 
+    useEffect(() => {
+        const filtered = ikans.filter(ikan => {
+            if (selectedCategory === 'laut') return ikan.category === 'laut';
+            if (selectedCategory === 'payau') return ikan.category === 'payau';
+            return true; // Jika kategori kosong, tampilkan semua
+        });
+    
+        setFilteredIkans(filtered);
+    }, [selectedCategory, ikans]);
 
-    const handleSearchChange = (event) => {
-        setSearchTerm(event.target.value);
+    // Handle input pencarian
+    const handleSearch = (e) => {
+        const term = e.target.value.toLowerCase();
+        setSearchTerm(term);
+
+        const filtered = ikans.filter(ikan => 
+            ikan.nama.toLowerCase().includes(term) || 
+            ikan.kota.toLowerCase().includes(term) || 
+            ikan.provinsi.toLowerCase().includes(term)
+        );
+        setFilteredIkans(filtered);
     };
-
-    const filteredIkan = ikan.filter((ikankonsumsi) =>
-        ikankonsumsi.nama.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     const handleUserIconClick = () => {
         navigate('/profile'); // Navigasi ke halaman UserInfo
@@ -71,7 +64,7 @@ function PageIkanHias() {
                             placeholder="Search....."
                             className="w-full outline-none"
                             value={searchTerm}
-                            onChange={handleSearchChange}
+                            onChange={handleSearch}
                         />
                         <button className="w-8 h-8" type="submit"><img src={search} /></button>
                     </form>
@@ -125,7 +118,7 @@ function PageIkanHias() {
                 {/* Main Content */}
                 <div className="p-6">
                     {/* Product Cards */}
-                    <div className="grid grid-cols-4 gap-4 mt-4">{filteredIkan.map(ikanhias => (
+                    <div className="grid grid-cols-4 gap-4 mt-4">{filteredIkans.map(ikanhias => (
                         <Link to={`/ikanhias/product/${ikanhias.id}`} key={ikanhias.id} className="hover:scale-105 transform transition duration-300 border-solid border-2 border-black rounded-lg p-4">
                             <img src={ikanhias.gambar_url} alt={ikanhias.nama} className="w-60 h-32 object-cover mb-2" />
                             <h3 className="text-lg font-bold">{ikanhias.nama}</h3>
