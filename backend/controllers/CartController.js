@@ -1,6 +1,7 @@
 const pool = require('../db'); // Pastikan kita menggunakan koneksi database
 const axios = require('axios');
 const ONGKOS_PER_KM = 9;
+const ikans = require('../allikan.json')
 
 exports.AddtoKeranjang = async (req, res) => {
   const { product_id, quantity, harga_total } = req.body;
@@ -9,19 +10,14 @@ exports.AddtoKeranjang = async (req, res) => {
       const user_id = req.user.user_id;
 
       // Ambil nama produk, gambar_url, dan lokasi (kota) berdasarkan product_id
-      const productResult = await pool.query(
-          `SELECT nama, gambar_url, kota FROM allproduct WHERE product_id = $1`,
-          [product_id]
-      );
+      const productResult = ikans.ikan.find(item => item.product_id === product_id);
+      if (!productResult) {
+        return res.status(404).json({ error: 'Produk tidak ditemukan.' });
+    }
 
-      const nama_produk = productResult.rows[0]?.nama;
-      const image_url = productResult.rows[0]?.gambar_url;
-      const lokasi_product = productResult.rows[0]?.kota;
+        const { nama_produk, gambar_url} = productResult;
+        const harga_total = productResult.harga * quantity;
 
-
-      if (!nama_produk || !image_url || !lokasi_product) {
-          return res.status(404).json({ error: 'Product not found, image URL or location missing' });
-      }
 
       // Simpan data ke tabel cart
       await pool.query(
@@ -34,7 +30,7 @@ exports.AddtoKeranjang = async (req, res) => {
               nama_produk = $5,
               image_url = $6,
               lokasi_product = $7`,
-          [user_id, product_id, quantity, harga_total, nama_produk, image_url, lokasi_product]
+          [user_id, productResult.product_id, quantity, harga_total, productResult.nama, productResult.images, productResult.kota]
       );
 
       res.status(200).json({ message: 'Product added to cart' });

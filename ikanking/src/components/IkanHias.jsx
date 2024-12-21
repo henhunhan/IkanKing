@@ -119,7 +119,7 @@ function PageIkanHias() {
                 <div className="p-6">
                     {/* Product Cards */}
                     <div className="grid grid-cols-4 gap-4 mt-4">{filteredIkans.map(ikanhias => (
-                        <Link to={`/ikanhias/product/${ikanhias.id}`} key={ikanhias.id} className="hover:scale-105 transform transition duration-300 border-solid border-2 border-black rounded-lg p-4">
+                        <Link to={`/ikanhias/product/${ikanhias.product_id}`} key={ikanhias.product_id} className="hover:scale-105 transform transition duration-300 border-solid border-2 border-black rounded-lg p-4">
                             <img src={ikanhias.gambar_url} alt={ikanhias.nama} className="w-60 h-32 object-cover mb-2" />
                             <h3 className="text-lg font-bold">{ikanhias.nama}</h3>
                             <p className="text-red-500 font-semibold">    Rp. {ikanhias.harga ? parseFloat(ikanhias.harga).toLocaleString('id-ID') : "Harga tidak tersedia"}/Ekor</p>

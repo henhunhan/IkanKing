@@ -121,7 +121,7 @@ function PageIkanKonsumsi() {
                 <div className="p-6">
                     <div className="grid grid-cols-4 gap-4 mt-4">
                         {filteredIkans.map(ikankonsumsi => (
-                            <Link to={`/ikankonsumsi/product/${ikankonsumsi.id}`} key={ikankonsumsi.id} className="hover:scale-105 transform transition duration-300 border-solid border-2 border-black rounded-lg p-4">
+                            <Link to={`/ikankonsumsi/product/${ikankonsumsi.product_id}`} key={ikankonsumsi.product_id} className="hover:scale-105 transform transition duration-300 border-solid border-2 border-black rounded-lg p-4">
                                 <img src={ikankonsumsi.gambar_url} alt={ikankonsumsi.nama} className="w-60 h-32 object-cover mb-2" />
                                 <h3 className="text-lg font-bold">{ikankonsumsi.nama}</h3>
                                 <p className="text-red-500 font-semibold">Rp. {ikankonsumsi.harga ? parseFloat(ikankonsumsi.harga).toLocaleString('id-ID') : "Harga tidak tersedia"}/Kg</p>

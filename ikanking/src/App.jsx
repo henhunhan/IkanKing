@@ -23,8 +23,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/ikankonsumsi" element={<PageIkanKonsumsi />} />
-          <Route path="/ikankonsumsi/product/:id" element={<DetailIkanKonsumsi />} />
-          <Route path="/ikanhias/product/:id" element={<DetailIkanHias />} />
+          <Route path="/ikankonsumsi/product/:product_id" element={<DetailIkanKonsumsi />} />
+          <Route path="/ikanhias/product/:product_id" element={<DetailIkanHias />} />
           <Route path="/ikanhias" element={<PageIkanHias />} />
           <Route path="/cart" element={<PageCart />} />
           <Route path="/checkout" element={<ProductCheckout />} />

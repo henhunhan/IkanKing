@@ -13,7 +13,7 @@
       "tipe": "ikan-hias"
     },
     {
-      "images": "/images/Ikan_Yellow_Angel_Keeper.jpg",
+      "images": "/images/Ikan_Yellow_Angel_Keeper.jpeg",
       "product_id": "0f0d3f6e-f533-4a9d-97ce-4284824cc198",
       "category": "laut",
       "nama": "Ikan Yellow Angel Keeper",
@@ -85,7 +85,7 @@
       "tipe": "ikan-hias"
     },
     {
-        "images": "/images/Ikan_Gurame.jpg",
+        "images": "/images/Ikan_Gurame.png",
         "product_id": "3f8d85e9-6bce-41c4-8cc2-b08d48e52f78",
         "category": "tawar",
         "nama": "Ikan Gurame",
@@ -97,7 +97,7 @@
         "tipe": "ikan-konsumsi"
       },
       {
-        "images": "/images/Ikan_Bawal",
+        "images": "/images/Ikan_Bawal.jpg",
         "product_id": "4359457c-c096-465e-9ae8-ce4686bd2b54",
         "category": "laut",
         "nama": "Ikan Bawal",
@@ -193,7 +193,7 @@
         "tipe": "ikan-konsumsi"
       },
       {
-        "images": "/images/Ikan_Neon_Tetra",
+        "images": "/images/Ikan_Neon_Tetra.jpg",
         "product_id": "84980199-a26f-4536-8fb8-af8b6f6b74c8",
         "category": "tawar",
         "nama": "Ikan Neon Tetra",
@@ -205,7 +205,7 @@
         "tipe": "ikan-hias"
       },
       {
-        "images": "/images/Ikan_Lele.jpg",
+        "images": "/images/Ikan_Lele.png",
         "product_id": "95bb6541-e5fe-4436-ae34-e95125c339cd",
         "category": "tawar",
         "nama": "Ikan Lele",
@@ -265,7 +265,7 @@
           "tipe": "ikan-konsumsi"
         },
         {
-          "images": "/images/Ikan_Bandeng",
+          "images": "/images/Ikan_Bandeng.jpg",
           "product_id": "ec6c1cce-cf34-4783-b8ea-ec017a269c85",
           "category": "payau",
           "nama": "Ikan Bandeng",

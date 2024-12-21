@@ -9,7 +9,7 @@ const ikanRoutes = require('./routes/ikanroutes');
 const CartRoutes = require('./routes/Cartroutes');
 
 const corsOptions = {
-  origin: 'http://localhost:5173', // Ganti dengan domain frontend Anda
+  origin: 'http://localhost:3000', // Ganti dengan domain frontend Anda
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Metode yang diizinkan
   allowedHeaders: ['Authorization', 'Content-Type'], // Header yang diizinkan
   Credentials: true,

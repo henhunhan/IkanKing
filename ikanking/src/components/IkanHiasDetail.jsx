@@ -1,30 +1,25 @@
-import { useEffect, useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import LogoIkanking from './LogoIkanking';
 import cart from './assets/add-shopping-cart.png';
 import portrait from './assets/portrait.png';
 import { AuthContext } from './auth';
 import usercart from './assets/shopping-cart.png'
+import dataikan from './allikan.json'
 
 function DetailIkanHias() {
-    const { id } = useParams();
+    const { product_id } = useParams();
     const navigate = useNavigate();
     const { isLoggedIn, handleLogout } = useContext(AuthContext);
-    const [ikanhias, setProduct] = useState('');
     const [quantity, setQuantity] = useState(1);
 
-    useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                const response = await fetch(`http://localhost/api/ikanhias/product/${id}`);
-                const data = await response.json();
-                setProduct(data);
-            } catch (error) {
-                console.error("Error fetching product:", error);
-            }
-        };
-        fetchProduct();
-    }, [id]);
+    const ikanhias = dataikan.ikan.find(item => item.product_id === product_id) // Pastikan id cocok
+    console.log('product_id:', product_id);
+    console.log('ikanhias:', ikanhias);
+
+    if (!ikanhias) {
+        return <div className="flex h-screen justify-center items-center text-3xl">Produk tidak ditemukan</div>;
+    }
 
     const increaseQuantity = () => {
         setQuantity((prevQuantity) => prevQuantity + 1);
@@ -42,14 +37,14 @@ function DetailIkanHias() {
         }
 
         try {
-            const response = await fetch('http://localhost/api/cart/add', {
+            const response = await fetch('http://localhost:5000/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    product_id: id,
+                    product_id: product_id,
                     quantity,
                     harga_total: quantity * ikanhias.harga
                 })
@@ -76,14 +71,14 @@ function DetailIkanHias() {
         }
         navigate('/checkout');
         try {
-            const response = await fetch('http://localhost/api/cart/add', {
+            const response = await fetch('http://localhost:5000/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    product_id: id,
+                    product_id: product_id,
                     quantity,
                     harga_total: quantity * ikanhias.harga
                 })
@@ -140,7 +135,7 @@ function DetailIkanHias() {
             <div className="flex justify-center p-8 h-2/3 mt-10">
                 <div className="flex">
                     <div className="flex justify-center w-2/3 p-3">
-                        <img src={ikanhias.gambar_url} alt={ikanhias.nama} className="w-full h-full object-contain" />
+                        <img src={ikanhias.images} alt={ikanhias.nama} className="w-full h-full object-contain" />
                     </div>
 
                     <div className="w-1/2 pt-2 pb-7 pr-2 pl-4 flex flex-col justify-center">

@@ -109,7 +109,7 @@ function ProductCheckout() {
     const handlePayment = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch("http://localhost/api/cart/checkout", {
+            const response = await fetch("http://localhost:5000/api/cart/checkout", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
