@@ -1,0 +1,32 @@
+# Gunakan image node yang ringan untuk frontend
+FROM node:20-alpine AS build
+
+# Set direktori kerja di dalam container
+WORKDIR /app
+
+# Salin file package.json dan package-lock.json
+COPY package.json package-lock.json ./
+
+# Install dependensi
+RUN npm install
+
+# Salin seluruh kode aplikasi ke dalam container
+COPY . .
+
+# Build aplikasi untuk produksi
+RUN npm run build
+
+# Gunakan server NGINX untuk melayani file build
+FROM nginx:1.25-alpine
+
+# Salin file build ke direktori default NGINX
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Salin konfigurasi NGINX (opsional jika perlu konfigurasi khusus)
+# COPY nginx.conf /etc/nginx/nginx.conf
+
+# Expose port 80 untuk akses HTTP
+EXPOSE 80
+
+# Default command untuk menjalankan NGINX
+CMD ["nginx", "-g", "daemon off;"]
