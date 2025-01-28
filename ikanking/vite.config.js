@@ -5,19 +5,18 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000, // Port server
-    host: true,
-    strictPort: true, // Gunakan port ini atau gagal
-    origin: 'https://lai24b-k10.tekomits.my.id', // Alamat frontend yang diakses browser
+    port: 3000, // Port untuk frontend
+    host: true, // Mengaktifkan akses melalui localhost
+    strictPort: true, // Pastikan port tidak berubah
     proxy: {
       '/api': {
-        target: 'http://localhost:5050', // Alamat backend
-        changeOrigin: true,
+        target: 'http://localhost:5000', // Alamat backend
+        changeOrigin: true, // Mengubah origin sesuai target
       },
     },
     hmr: {
-      host: 'lai24b-k10.tekomits.my.id', // Sesuaikan dengan host yang dapat diakses oleh browser
-      port: 3000, // Gunakan port server
+      host: 'localhost', // Gunakan localhost untuk HMR
+      port: 3000, // Port frontend
     },
   },
 });
